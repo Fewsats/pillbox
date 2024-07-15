@@ -14,7 +14,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export function Details() {
   const [credential, setCredential] = useState<credentials.Credential | null>(null)
-  const [copied, setCopied] = useState(false)
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const { id } = useParams<{ id: string }>()
 
@@ -44,6 +43,14 @@ export function Details() {
       })
   }
 
+  const renderMultilineField = (value: string) => {
+    return (
+      <pre className="w-full text-sm text-gray-900 dark:text-white bg-transparent whitespace-pre-wrap break-words">
+        {value}
+      </pre>
+    )
+  }
+
   if (!credential) return <div>Loading...</div>
 
   return (
@@ -57,7 +64,9 @@ export function Details() {
       <div className="overflow-hidden sm:rounded-lg w-full">
         <div className="px-6 py-5 sm:px-8">
           <div className="flex items-center justify-between">
-            <Heading className="text-3xl font-bold text-gray-900 dark:text-white">Credential #{credential.id}</Heading>
+            <Heading className="text-3xl font-bold text-gray-900 dark:text-white">
+              {credential.label} (#{credential.id})
+            </Heading>
             <Badge color="lime" className="text-sm font-semibold">Active</Badge>
           </div>
           <div className="mt-3 flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400">
@@ -100,33 +109,15 @@ export function Details() {
             </div>
             <div>
               <DescriptionTerm className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Macaroon</DescriptionTerm>
-              <DescriptionDetails 
-                className="text-base text-gray-900 dark:text-white truncate cursor-pointer flex items-center"
-                onClick={() => copyToClipboard(credential.macaroon, 'macaroon')}
-              >
-                {credential.macaroon}
-                {copiedField === 'macaroon' && <CheckIcon className="h-5 w-5 ml-2 text-green-500" />}
-              </DescriptionDetails>
+              {renderMultilineField(credential.macaroon)}
             </div>
             <div>
               <DescriptionTerm className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Preimage</DescriptionTerm>
-              <DescriptionDetails 
-                className="text-base text-gray-900 dark:text-white truncate cursor-pointer flex items-center"
-                onClick={() => copyToClipboard(credential.preimage, 'preimage')}
-              >
-                {credential.preimage}
-                {copiedField === 'preimage' && <CheckIcon className="h-5 w-5 ml-2 text-green-500" />}
-              </DescriptionDetails>
+              {renderMultilineField(credential.preimage)}
             </div>
             <div>
               <DescriptionTerm className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Invoice</DescriptionTerm>
-              <DescriptionDetails 
-                className="text-base text-gray-900 dark:text-white truncate cursor-pointer flex items-center"
-                onClick={() => copyToClipboard(credential.invoice, 'invoice')}
-              >
-                {credential.invoice}
-                {copiedField === 'invoice' && <CheckIcon className="h-5 w-5 ml-2 text-green-500" />}
-              </DescriptionDetails>
+              {renderMultilineField(credential.invoice)}
             </div>
             <div>
               <DescriptionTerm className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Created at</DescriptionTerm>

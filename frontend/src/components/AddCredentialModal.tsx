@@ -31,12 +31,13 @@ export function AddCredentialModal() {
     setIsLoading(true)
     setError('')
 
-    if (url === "https://api.fewsats.com/v0/storage/download/f656f47e-292b-473d-b614-1b88ba83e0d4") {
-      setMacaroon('')      
-      setInvoice('lnbc100n1png79ywpp5k0yc30m6sww36qvfmayxcf64qc4ja7hptfxxvm4zla729dq99xksdq8f3f5z4qcqzzsxqyz5vqsp5s20ks3085n44gpme0vd23cj5c6upfl2tdgm0s8efw2hf0u7c6avs9qyyssqqgg9mmvn4nxtdhsz7253d8qs8j7yyxrj9r4e4dpusa9uys4dree5wsxkfdr6u9l5v8er0n0g2un0mx03zrt3fxv8fwdsl85cwuvnl7sphydxjn')
-      setIsLoading(false)
-      return
-    }
+    
+    // if (url === "https://api.fewsats.com/v0/storage/download/f656f47e-292b-473d-b614-1b88ba83e0d4") {
+    //   setMacaroon('')      
+    //   setInvoice('lnbc100n1png79ywpp5k0yc30m6sww36qvfmayxcf64qc4ja7hptfxxvm4zla729dq99xksdq8f3f5z4qcqzzsxqyz5vqsp5s20ks3085n44gpme0vd23cj5c6upfl2tdgm0s8efw2hf0u7c6avs9qyyssqqgg9mmvn4nxtdhsz7253d8qs8j7yyxrj9r4e4dpusa9uys4dree5wsxkfdr6u9l5v8er0n0g2un0mx03zrt3fxv8fwdsl85cwuvnl7sphydxjn')
+    //   setIsLoading(false)
+    //   return
+    // }
     
     try {
       // Make API call to handle L402 errors and retrieve macaroon/invoice

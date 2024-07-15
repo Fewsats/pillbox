@@ -22,6 +22,7 @@ export function CredentialsTable({ credentials }: CredentialsTableProps) {
         <TableHead>
           <TableRow>
             <TableHeader>ID</TableHeader>
+            <TableHeader>Label</TableHeader>
             <TableHeader>URL</TableHeader>
             <TableHeader className="hidden lg:table-cell">Macaroon</TableHeader>
             <TableHeader className="hidden lg:table-cell">Preimage</TableHeader>
@@ -38,6 +39,11 @@ export function CredentialsTable({ credentials }: CredentialsTableProps) {
               <TableCell>
                 <div className="truncate" title={credential.id}>
                   {truncateText(credential.id, 8)}
+                </div>
+              </TableCell>
+              <TableCell>
+                <div className="truncate" title={credential.label}>
+                  {truncateText(credential.label, 20)}
                 </div>
               </TableCell>
               <TableCell>

@@ -35,9 +35,5 @@ to this in your browser, and you can call your Go code from devtools.
 To build a redistributable, production mode package, use
  
 ```
-cd frontend
-npm install
-npm run build
-
-wails build -clean -platform darwin/universal -platform windows/universal 
+make release
 ```
