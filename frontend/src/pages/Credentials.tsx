@@ -10,12 +10,12 @@ export function Credentials() {
     const { credentials } = context;
 
     return (
-        <>
+        <div className={'max-w-6xl mx-auto '}>
             <div className="flex justify-between items-center mb-5">
                 <Heading>L402 Credentials</Heading>
                 <AddCredentialModal />
             </div>
             <CredentialsTable credentials={credentials} />
-        </>
+        </div>
     );
 }

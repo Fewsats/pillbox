@@ -8,10 +8,10 @@ import { Credentials } from './pages/Credentials';
 import { CredentialDetails } from './pages/CredentialDetails';
 import { DownloadFile } from './pages/DownloadFile';
 import { Settings } from './pages/Settings';
-import { KeyIcon, Cog6ToothIcon, ArrowDownTrayIcon } from '@heroicons/react/20/solid';
+import {GraphQL} from "./pages/GraphQL";
+import { KeyIcon, Cog6ToothIcon, ArrowDownTrayIcon, CodeBracketIcon } from '@heroicons/react/20/solid';
 import { credentials } from '../wailsjs/go/models'
 import { ListCredentials } from '../wailsjs/go/main/App'
-
 
 // Define the context type
 type CredentialsContextType = {
@@ -28,7 +28,7 @@ function SidebarContent() {
     return (
         <Sidebar>
             <SidebarHeader>
-                <img src={logo} alt="Logo" className="h-8 w-auto" />
+                <img src={logo} alt="Logo" className="h-8 w-auto object-contain" />
             </SidebarHeader>
             <SidebarBody>
                 <SidebarItem onClick={() => navigate('/')} className="w-full flex items-center">
@@ -38,6 +38,10 @@ function SidebarContent() {
                 <SidebarItem onClick={() => navigate('/download')} className="w-full flex items-center">
                     <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
                     <span className="flex-grow">Download File</span>
+                </SidebarItem>
+                <SidebarItem onClick={() => navigate('/graphql')} className="w-full flex items-center">
+                    <CodeBracketIcon className="h-5 w-5 mr-2" />
+                    <span className="flex-grow">GraphQL</span>
                 </SidebarItem>
             </SidebarBody>
             <SidebarFooter>
@@ -90,6 +94,7 @@ function AppContent() {
                         <Route path="/" element={<Credentials />} />
                         <Route path="/credentials/:id" element={<CredentialDetails />} />
                         <Route path="/download" element={<DownloadFile />} />
+                        <Route path="/graphql" element={<GraphQL />} />
                         <Route path="/settings" element={<Settings />} />
                     </Routes>
                 </div>
