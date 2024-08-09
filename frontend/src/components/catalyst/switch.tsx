@@ -1,11 +1,14 @@
-import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
-import type React from 'react'
+import * as Headless from '@headlessui/react';
+import clsx from 'clsx';
+import type React from 'react';
 
-export function SwitchGroup({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function SwitchGroup({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'div'>) {
   return (
     <div
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(
         className,
@@ -15,13 +18,16 @@ export function SwitchGroup({ className, ...props }: React.ComponentPropsWithout
         'has-[[data-slot=description]]:space-y-6 [&_[data-slot=label]]:has-[[data-slot=description]]:font-medium'
       )}
     />
-  )
+  );
 }
 
-export function SwitchField({ className, ...props }: { className?: string } & Omit<Headless.FieldProps, 'className'>) {
+export function SwitchField({
+  className,
+  ...props
+}: { className?: string } & Omit<Headless.FieldProps, 'className'>) {
   return (
     <Headless.Field
-      data-slot="field"
+      data-slot='field'
       {...props}
       className={clsx(
         className,
@@ -37,7 +43,7 @@ export function SwitchField({ className, ...props }: { className?: string } & Om
         '[&_[data-slot=label]]:has-[[data-slot=description]]:font-medium'
       )}
     />
-  )
+  );
 }
 
 const colors = {
@@ -129,21 +135,21 @@ const colors = {
     '[--switch-bg-ring:theme(colors.rose.600/90%)] [--switch-bg:theme(colors.rose.500)] dark:[--switch-bg-ring:transparent]',
     '[--switch:white] [--switch-ring:theme(colors.rose.600/90%)] [--switch-shadow:theme(colors.rose.900/20%)]',
   ],
-}
+};
 
-type Color = keyof typeof colors
+type Color = keyof typeof colors;
 
 export function Switch({
   color = 'dark/zinc',
   className,
   ...props
 }: {
-  color?: Color
-  className?: string
+  color?: Color;
+  className?: string;
 } & Omit<Headless.SwitchProps, 'className' | 'children'>) {
   return (
     <Headless.Switch
-      data-slot="control"
+      data-slot='control'
       {...props}
       className={clsx(
         className,
@@ -170,7 +176,7 @@ export function Switch({
       )}
     >
       <span
-        aria-hidden="true"
+        aria-hidden='true'
         className={clsx(
           // Basic layout
           'pointer-events-none relative inline-block size-[1.125rem] rounded-full sm:size-3.5',
@@ -188,5 +194,5 @@ export function Switch({
         )}
       />
     </Headless.Switch>
-  )
+  );
 }

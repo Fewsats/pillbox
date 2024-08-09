@@ -19,8 +19,12 @@ type Credential struct {
 	// Location is the service URL for this credential.
 	Location string `json:"location"`
 
+	// Method is the type of the request. Possible values are 'POST' | 'GET' | 'PUT' | 'DELETE'
+    Method string `json:"method"`
+
 	// Macaroon is the hex-encoded macaroon.
 	Macaroon string `json:"macaroon"`
+
 	// Preimage is the hex-encoded preimage.
 	Preimage string `json:"preimage"`
 
@@ -29,6 +33,9 @@ type Credential struct {
 
 	// CreatedAt is the time the credential was created.
 	CreatedAt time.Time `json:"created_at"`
+
+	// Type is the type of the credential was created. Possible values are 'file' | 'graphql'
+	Type string `json:"type"`
 }
 
 type Manager struct {

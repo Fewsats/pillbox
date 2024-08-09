@@ -1,11 +1,13 @@
-import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
-import React, { forwardRef } from 'react'
+import * as Headless from '@headlessui/react';
+import clsx from 'clsx';
+import React, { forwardRef } from 'react';
 
-export function InputGroup({ children }: React.ComponentPropsWithoutRef<'span'>) {
+export function InputGroup({
+  children,
+}: React.ComponentPropsWithoutRef<'span'>) {
   return (
     <span
-      data-slot="control"
+      data-slot='control'
       className={clsx(
         'relative isolate block',
         '[&_input]:has-[[data-slot=icon]:first-child]:pl-10 [&_input]:has-[[data-slot=icon]:last-child]:pr-10 sm:[&_input]:has-[[data-slot=icon]:first-child]:pl-8 sm:[&_input]:has-[[data-slot=icon]:last-child]:pr-8',
@@ -16,25 +18,33 @@ export function InputGroup({ children }: React.ComponentPropsWithoutRef<'span'>)
     >
       {children}
     </span>
-  )
+  );
 }
 
-const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week']
-type DateType = (typeof dateTypes)[number]
+const dateTypes = ['date', 'datetime-local', 'month', 'time', 'week'];
+type DateType = (typeof dateTypes)[number];
 
 export const Input = forwardRef(function Input(
   {
     className,
     ...props
   }: {
-    className?: string
-    type?: 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | DateType
+    className?: string;
+    type?:
+      | 'email'
+      | 'number'
+      | 'password'
+      | 'search'
+      | 'tel'
+      | 'text'
+      | 'url'
+      | DateType;
   } & Omit<Headless.InputProps, 'className'>,
   ref: React.ForwardedRef<HTMLInputElement>
 ) {
   return (
     <span
-      data-slot="control"
+      data-slot='control'
       className={clsx([
         className,
         // Basic layout
@@ -90,5 +100,5 @@ export const Input = forwardRef(function Input(
         ])}
       />
     </span>
-  )
-})
+  );
+});
