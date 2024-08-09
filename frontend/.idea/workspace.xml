@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c1421b0a-5f66-4637-b648-6364d4903a6e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json.md5" beforeDir="false" afterPath="$PROJECT_DIR$/package.json.md5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/postcss.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/postcss.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AddCredentialModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AddCredentialModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CredentialDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CredentialDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CredentialsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CredentialsTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/alert.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/alert.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/avatar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/avatar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/badge.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/badge.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/checkbox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/checkbox.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/description-list.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/description-list.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/dialog.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/dialog.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/divider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/divider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/dropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/dropdown.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/fieldset.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/fieldset.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/heading.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/heading.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/link.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/link.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/listbox.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/listbox.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/navbar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/navbar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/pagination.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/pagination.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/radio.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/radio.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/select.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/select.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/sidebar-layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/sidebar-layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/stacked-layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/stacked-layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/switch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/switch.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/text.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/text.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/catalyst/textarea.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/catalyst/textarea.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/input.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/input.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/light-bolt11-decoder.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/light-bolt11-decoder.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/CredentialDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/CredentialDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Credentials.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Credentials.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/DownloadFile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/DownloadFile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/GraphQL.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/GraphQL.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Settings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Settings.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vite-env.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/vite-env.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/tailwind.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.node.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.node.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wailsjs/go/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/wailsjs/go/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pkg/credentials/manager.go" beforeDir="false" afterPath="$PROJECT_DIR$/../pkg/credentials/manager.go" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2kPrVtMLwrpu3c3zliJHJcEePZK" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;E:\\projects\\pillbox\\frontend\\node_modules\\prettier&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c1421b0a-5f66-4637-b648-6364d4903a6e" name="Changes" comment="" />
+      <created>1723196079985</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1723196079985</updated>
+      <workItem from="1723196081361" duration="154000" />
+      <workItem from="1723196405244" duration="102000" />
+      <workItem from="1723202703410" duration="1717000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

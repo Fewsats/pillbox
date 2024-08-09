@@ -1,7 +1,7 @@
-import * as Headless from '@headlessui/react'
-import clsx from 'clsx'
-import React, { forwardRef } from 'react'
-import { Link } from './link'
+import * as Headless from '@headlessui/react';
+import clsx from 'clsx';
+import React, { forwardRef } from 'react';
+import { Link } from './link';
 
 const styles = {
   base: [
@@ -156,7 +156,7 @@ const styles = {
       '[--btn-icon:theme(colors.rose.300)] data-[active]:[--btn-icon:theme(colors.rose.200)] data-[hover]:[--btn-icon:theme(colors.rose.200)]',
     ],
   },
-}
+};
 
 type ButtonProps = (
   | { color?: keyof typeof styles.colors; outline?: never; plain?: never }
@@ -165,7 +165,7 @@ type ButtonProps = (
 ) & { className?: string; children: React.ReactNode } & (
     | Omit<Headless.ButtonProps, 'className'>
     | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
-  )
+  );
 
 export const Button = forwardRef(function Button(
   { color, outline, plain, className, children, ...props }: ButtonProps,
@@ -174,19 +174,31 @@ export const Button = forwardRef(function Button(
   let classes = clsx(
     className,
     styles.base,
-    outline ? styles.outline : plain ? styles.plain : clsx(styles.solid, styles.colors[color ?? 'dark/zinc'])
-  )
+    outline
+      ? styles.outline
+      : plain
+        ? styles.plain
+        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc'])
+  );
 
   return 'href' in props ? (
-    <Link {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
+    <Link
+      {...props}
+      className={classes}
+      ref={ref as React.ForwardedRef<HTMLAnchorElement>}
+    >
       <TouchTarget>{children}</TouchTarget>
     </Link>
   ) : (
-    <Headless.Button {...props} className={clsx(classes, 'cursor-default')} ref={ref}>
+    <Headless.Button
+      {...props}
+      className={clsx(classes, 'cursor-pointer')}
+      ref={ref}
+    >
       <TouchTarget>{children}</TouchTarget>
     </Headless.Button>
-  )
-})
+  );
+});
 
 /**
  * Expand the hit area to at least 44×44px on touch devices
@@ -195,10 +207,10 @@ export function TouchTarget({ children }: { children: React.ReactNode }) {
   return (
     <>
       <span
-        className="absolute left-1/2 top-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 [@media(pointer:fine)]:hidden"
-        aria-hidden="true"
+        className='absolute left-1/2 top-1/2 size-[max(100%,2.75rem)] -translate-x-1/2 -translate-y-1/2 [@media(pointer:fine)]:hidden'
+        aria-hidden='true'
       />
       {children}
     </>
-  )
+  );
 }

@@ -1,134 +1,165 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import { Heading } from '../components/catalyst/heading';
 
 import { GraphiQL } from 'graphiql';
 import type { Fetcher } from '@graphiql/toolkit';
 import 'graphiql/graphiql.min.css';
-import {Button} from "../components/catalyst/button";
-import {Fieldset, Label} from "../components/catalyst/fieldset";
-import {Input} from "../components/catalyst/input";
+import { Field, Label } from '../components/catalyst/fieldset';
+import { Combobox } from '../components/catalyst/combobox';
+import { CredentialsContext } from '../App';
+
+type Option = {
+  id: string;
+  name: string;
+  details?: {
+    url: string;
+    l402Credentials: string;
+  };
+};
 
 export const GraphQL: React.FC = () => {
-  const [queryUrl, setQueryUrl] = useState('');
-  // const [error, setError] = useState<string | null>(null);
-  const [credentials, setCredentials] = useState('');
+  const context = useContext(CredentialsContext);
+  if (!context)
+    throw new Error(
+      'CredentialsContext must be used within a CredentialsProvider'
+    );
+  const { credentials } = context;
+
+  const options = useMemo(
+    () =>
+      credentials
+        ?.filter((item) => item.type === 'graphql')
+        .map((item) => ({
+          id: item.id,
+          name: item.label,
+          details: {
+            url: item.location,
+            l402Credentials: `${item.macaroon}:${item.preimage}`,
+          },
+        })) || [],
+    [credentials]
+  );
+
+  const [active, setActive] = useState<Option>(
+    options.length ? options[0] : { id: '', name: '' }
+  );
+  const url = useMemo(() => active?.details?.url || '', [active]);
+  const l402Credentials = useMemo(
+    () => active?.details?.l402Credentials || '',
+    [active]
+  );
   const [isValidCredentials, setIsValidCredentials] = useState(false);
-  const [status, setStatus] = useState<{ message: string; ok: boolean } | null>(null);
+  const [status, setStatus] = useState<{ message: string; ok: boolean } | null>(
+    null
+  );
 
   useEffect(() => {
-    const isValid = /^[^:]+:[^:]+$/.test(credentials.trim());
+    const isValid = /^[^:]+:[^:]+$/.test(l402Credentials.trim());
     setIsValidCredentials(isValid);
-  }, [credentials]);
+  }, [l402Credentials]);
 
-  const handleQueryUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQueryUrl(e.target.value);
-    setStatus(null);
-  };
-
-  const handleCredentialsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials(e.target.value);
-    setStatus(null);
-  };
-
-  const fetcher: Fetcher = useCallback(async (graphQLParams) => {
-    if (!credentials) {
-      console.log('No L402 credentials provided');
-      return Promise.resolve({ data: null });
-    }
-
-    if (!queryUrl) {
-      console.log('No queryUrl provided');
-      return Promise.resolve({ data: null });
-    }
-
-    try {
-      console.log('Fetching from queryUrl:', queryUrl);
-      let response;
-
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-      };
-
-      if (isValidCredentials) {
-        const [macaroon, preimage] = credentials.split(':');
-        headers['Authorization'] = `L402 ${macaroon}:${preimage}`;
+  const fetcher: Fetcher = useCallback(
+    async (graphQLParams) => {
+      if (!l402Credentials) {
+        console.log('No L402 credentials provided');
+        return Promise.resolve({ data: null });
       }
 
-      response = await fetch(queryUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(graphQLParams),
-      });
-
-      console.log('Fetch response status:', response.status);
-      if (response.ok) {
-        setStatus({ message: `${response.status} OK`, ok: true });
-      } else if (response.status === 402) {
-        setStatus({ message: '402 Payment Required', ok: false });
-        window.open(`http://app.paywithhub.com/purchases?l402_queryUrl=${encodeURIComponent(queryUrl)}`, '_blank')
-        throw new Error('Payment required');
-      } else {
-        setStatus({ message: `${response.status} ${response.statusText}`, ok: false });
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!url) {
+        console.log('No queryUrl provided');
+        return Promise.resolve({ data: null });
       }
 
-      const result = await response.json();
-      console.log('Fetcher received result:', result);
+      try {
+        console.log('Fetching from queryUrl:', url);
+        let response;
 
-      if (result.errors) {
-        console.error('GraphQL errors in response:', result.errors);
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
+
+        if (isValidCredentials) {
+          const [macaroon, preimage] = l402Credentials.split(':');
+          headers['Authorization'] = `L402 ${macaroon}:${preimage}`;
+        }
+
+        response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(graphQLParams),
+        });
+
+        console.log('Fetch response status:', response.status);
+        if (response.ok) {
+          setStatus({ message: `${response.status} OK`, ok: true });
+        } else if (response.status === 402) {
+          setStatus({ message: '402 Payment Required', ok: false });
+          throw new Error('Payment required');
+        } else {
+          setStatus({
+            message: `${response.status} ${response.statusText}`,
+            ok: false,
+          });
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Fetcher received result:', result);
+
+        if (result.errors) {
+          console.error('GraphQL errors in response:', result.errors);
+        }
+
+        return result;
+      } catch (error) {
+        console.error('Fetcher error:', error);
+        throw error;
       }
-
-      return result;
-    } catch (error) {
-      console.error('Fetcher error:', error);
-      throw error;
-    }
-  }, [queryUrl, credentials, isValidCredentials]);
+    },
+    [url, l402Credentials, isValidCredentials]
+  );
 
   return (
-    <div className="max-w-[1920px] mx-auto  mx-auto p-4">
-      <Heading level={1} className="mb-4 px-4 ">GraphQL Explorer</Heading>
+    <div className='mx-auto max-w-[1920px] p-4'>
+      <Heading level={1} className='mb-4 px-4'>
+        GraphQL Explorer
+      </Heading>
 
-      <div className="flex-1 overflow-hidden">
-        <div className="graphiql-session-header py-2 px-4 flex items-start border-b border-gray-200 gap-4">
-          <Fieldset className={'flex items-center flex-1 gap-4'}>
-            <Label htmlFor="queryUrl" className={'flex-shrink-0'}>Query URL:</Label>
-            <Input
-                id="queryUrl"
-                type="text"
-                value={queryUrl}
-                onChange={handleQueryUrlChange}
-                placeholder="https://api.example.com/graphql"
-                className={'!mt-0'}
+      <div className='flex-1 overflow-hidden'>
+        <div className='graphiql-session-header flex items-start gap-4 border-b border-gray-200 px-4 py-2'>
+          <Field>
+            <Label>Query URL:</Label>
+            <Combobox
+              value={active}
+              onChange={(option) => {
+                setActive(option);
+                setStatus(null);
+              }}
+              options={options}
+              search={true}
+              name={'fileUrl'}
             />
-          </Fieldset>
-          <Fieldset className={'flex items-center flex-1 gap-4'}>
-            <Label htmlFor="l402" className={'flex-shrink-0'}>L402 Credentials:</Label>
-            <Input
-                id="l402"
-                type="text"
-                value={credentials}
-                onChange={handleCredentialsChange}
-                placeholder="macaroon:preimage"
-                className={'!mt-0'}
-            />
-          </Fieldset>
-          <Button type="button" onClick={() => window.open(`http://app.paywithhub.com/purchases?l402_queryUrl=${encodeURIComponent(queryUrl)}`, '_blank')}>
-            Pay with Hub
-          </Button>
+          </Field>
         </div>
         {status && (
-            <span style={{
+          <span
+            style={{
               fontSize: '14px',
               fontWeight: 'bold',
               color: status.ok ? 'green' : 'red',
-              marginRight: '16px'
-            }}>
-                {status.message}
-              </span>
+              marginRight: '16px',
+            }}
+          >
+            {status.message}
+          </span>
         )}
-        <div style={{ flex: 1, overflow: 'auto', height: 'calc(100vh - 240px)' }}>
+        <div style={{ flex: 1, overflow: 'auto' }}>
           <GraphiQL fetcher={fetcher} />
         </div>
       </div>
