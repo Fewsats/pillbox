@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {toast, ToastContainer} from 'react-toastify';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
 import { SaveFile } from '../../wailsjs/go/main/App';
 
 import { Button } from '../components/catalyst/button';
@@ -27,26 +27,24 @@ export const DownloadFile: React.FC = () => {
     );
   const { credentials } = context;
 
-  const options = useMemo(
-    () => {
-      const filtered = credentials
-          ?.filter((item) => item.type === 'file')
-          .map((item) => ({
-            id: item.id,
-            name: item.label,
-            details: {
-              url: item.location,
-              l402Credentials: `${item.macaroon}:${item.preimage}`,
-            },
-          }));
-      const notSelectedOption = {
-        id: 'na', name: 'Not Selected'
-      }
+  const options = useMemo(() => {
+    const filtered = credentials
+      ?.filter((item) => item.type === 'file')
+      .map((item) => ({
+        id: item.id,
+        name: item.label,
+        details: {
+          url: item.location,
+          l402Credentials: `${item.macaroon}:${item.preimage}`,
+        },
+      }));
+    const notSelectedOption = {
+      id: 'na',
+      name: 'Not Selected',
+    };
 
-      return [notSelectedOption, ...(filtered || [])]
-    },
-    [credentials]
-  );
+    return [notSelectedOption, ...(filtered || [])];
+  }, [credentials]);
 
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -118,31 +116,31 @@ export const DownloadFile: React.FC = () => {
         <Field>
           <Label>File URL:</Label>
           <Combobox
-              value={active}
-              onChange={(option) => setActive(option)}
-              options={options}
-              search={true}
-              name={'fileUrl'}
+            value={active}
+            onChange={(option) => setActive(option)}
+            options={options}
+            search={true}
+            name={'fileUrl'}
           />
         </Field>
         <Field>
-          <Label htmlFor="url">File URL:</Label>
+          <Label htmlFor='url'>File URL:</Label>
           <Input
-              id="url"
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
+            id='url'
+            type='url'
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            required
           />
         </Field>
         <Field>
-          <Label htmlFor="l402">L402 Credentials:</Label>
+          <Label htmlFor='l402'>L402 Credentials:</Label>
           <Input
-              id="l402"
-              type="text"
-              value={l402Credentials}
-              onChange={(e) => setL402Credentials(e.target.value)}
-              required
+            id='l402'
+            type='text'
+            value={l402Credentials}
+            onChange={(e) => setL402Credentials(e.target.value)}
+            required
           />
         </Field>
         <div className='flex justify-center'>
