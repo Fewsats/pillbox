@@ -10,5 +10,16 @@
 }
 
 .graphiql-container {
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 280px);
+}
+
+.graphiql-container .graphiql-main .graphiql-sessions {
+  background-color: transparent;
+}
+
+.graphiql-container .graphiql-main .graphiql-editors {
+  box-shadow: none;
+  border-radius: 0;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
 }
