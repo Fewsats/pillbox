@@ -1,5 +1,5 @@
-import React, { useContext, useMemo, useState } from 'react';
-import { toast } from 'react-toastify';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
+import {toast, ToastContainer} from 'react-toastify';
 import { SaveFile } from '../../wailsjs/go/main/App';
 
 import { Button } from '../components/catalyst/button';
@@ -8,6 +8,7 @@ import { Text } from '../components/catalyst/text';
 import { Heading } from '../components/catalyst/heading';
 import { CredentialsContext } from '../App';
 import { Combobox } from '../components/catalyst/combobox';
+import { Input } from '../components/catalyst/input';
 
 type Option = {
   id: string;
@@ -27,17 +28,23 @@ export const DownloadFile: React.FC = () => {
   const { credentials } = context;
 
   const options = useMemo(
-    () =>
-      credentials
-        ?.filter((item) => item.type === 'file')
-        .map((item) => ({
-          id: item.id,
-          name: item.label,
-          details: {
-            url: item.location,
-            l402Credentials: `${item.macaroon}:${item.preimage}`,
-          },
-        })) || [],
+    () => {
+      const filtered = credentials
+          ?.filter((item) => item.type === 'file')
+          .map((item) => ({
+            id: item.id,
+            name: item.label,
+            details: {
+              url: item.location,
+              l402Credentials: `${item.macaroon}:${item.preimage}`,
+            },
+          }));
+      const notSelectedOption = {
+        id: 'na', name: 'Not Selected'
+      }
+
+      return [notSelectedOption, ...(filtered || [])]
+    },
     [credentials]
   );
 
@@ -47,11 +54,13 @@ export const DownloadFile: React.FC = () => {
   const [active, setActive] = useState<Option>(
     options.length ? options[0] : { id: '', name: '' }
   );
-  const url = useMemo(() => active?.details?.url || '', [active]);
-  const l402Credentials = useMemo(
-    () => active?.details?.l402Credentials || '',
-    [active]
-  );
+  const [url, setUrl] = useState('');
+  const [l402Credentials, setL402Credentials] = useState('');
+
+  useEffect(() => {
+    setUrl(active?.details?.url || '');
+    setL402Credentials(active?.details?.l402Credentials || '');
+  }, [active]);
 
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,11 +118,31 @@ export const DownloadFile: React.FC = () => {
         <Field>
           <Label>File URL:</Label>
           <Combobox
-            value={active}
-            onChange={(option) => setActive(option)}
-            options={options}
-            search={true}
-            name={'fileUrl'}
+              value={active}
+              onChange={(option) => setActive(option)}
+              options={options}
+              search={true}
+              name={'fileUrl'}
+          />
+        </Field>
+        <Field>
+          <Label htmlFor="url">File URL:</Label>
+          <Input
+              id="url"
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+          />
+        </Field>
+        <Field>
+          <Label htmlFor="l402">L402 Credentials:</Label>
+          <Input
+              id="l402"
+              type="text"
+              value={l402Credentials}
+              onChange={(e) => setL402Credentials(e.target.value)}
+              required
           />
         </Field>
         <div className='flex justify-center'>
@@ -136,6 +165,7 @@ export const DownloadFile: React.FC = () => {
         </div>
       )}
       {error && <Text className='mt-2 text-red-500'>{error}</Text>}
+      <ToastContainer />
     </div>
   );
 };
