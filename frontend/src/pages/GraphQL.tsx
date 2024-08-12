@@ -136,7 +136,7 @@ export const GraphQL: React.FC = () => {
         throw error;
       }
     },
-    [url, l402Credentials, isValidCredentials]
+    [isValidCredentials]
   );
 
   return (
