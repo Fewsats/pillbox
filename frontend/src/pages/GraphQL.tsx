@@ -4,7 +4,7 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  FormEventHandler,
+  useRef,
 } from 'react';
 import { Heading } from '../components/catalyst/heading';
 
@@ -22,6 +22,7 @@ import { request, gql } from 'graphql-request';
 import { OpenAI } from 'openai';
 import { Textarea } from '../components/catalyst/textarea';
 import { Button } from '../components/catalyst/button';
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 
 const introspectionQuery = gql`
   ${getIntrospectionQuery()}
@@ -88,9 +89,12 @@ export const GraphQL: React.FC = () => {
   const [generatedQuery, setGeneratedQuery] = useState('');
   const [query, setQuery] = useState('');
   const [toExecute, setToExecute] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<
     { role: 'assistant' | 'user'; message: string }[]
   >([]);
+
+  const promptRef: React.RefObject<HTMLTextAreaElement> = useRef(null);
 
   useEffect(() => {
     const isValid = /^[^:]+:[^:]+$/.test(l402Credentials.trim());
@@ -285,6 +289,20 @@ export const GraphQL: React.FC = () => {
     setQuery(newQuery);
   };
 
+  const toggleChat = () => {
+    setChatOpen(!chatOpen);
+  };
+
+  useEffect(() => {
+    if (!promptRef.current) {
+      return;
+    }
+
+    promptRef.current.style.height = 'auto';
+    promptRef.current.style.height =
+      Math.min(promptRef.current.scrollHeight, 200) + 'px';
+  }, [prompt]);
+
   return (
     <div className='mx-auto max-w-[1920px] p-4'>
       <Heading level={1} className='mb-4 px-4'>
@@ -341,32 +359,22 @@ export const GraphQL: React.FC = () => {
           </span>
         )
         */}
-        <div className={'flex space-x-4'}>
-          <div className='graphiql-query-input w-full max-w-xs space-x-4 px-4 py-2'>
-            <form className={'space-y-4 py-2'} onSubmit={submitMessage}>
-              <Field className={'flex-1'}>
-                <Label htmlFor='prompt'>Query Prompt:</Label>
-                <Textarea
-                  id='prompt'
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  required
-                />
-              </Field>
-              <div className={'flex space-x-4'}>
-                <Button type='submit'>Generate Query</Button>
-                <Button
-                  type='button'
-                  onClick={handleExecute}
-                  disabled={!generatedQuery}
-                >
-                  Apply Query
-                </Button>
-              </div>
-            </form>
-
-            {!!messages.length && (
-              <div className='space-y-4 py-2'>
+        <div className={'flex space-y-4 py-2'}>
+          <div
+            className={`graphiql-openai-container flex flex-col overflow-hidden py-2 ${chatOpen ? 'max-w-96' : 'max-w-12'} transition-all duration-300 ease-in-out`}
+          >
+            <div
+              className={
+                'mt-4 w-fit cursor-pointer rounded px-2.5 py-2.5 hover:bg-gray-200/60'
+              }
+              onClick={toggleChat}
+            >
+              <ChatBubbleLeftRightIcon className={'h-6 w-6 text-gray-500'} />
+            </div>
+            <div
+              className={`graphiql-query-input flex min-w-96 flex-1 shrink-0 flex-col space-y-4 ${chatOpen ? 'opacity-100' : 'opacity-0'} transition-all duration-300 ease-in-out`}
+            >
+              <div className='graphiql-openai-messages-container my-2 flex-1 space-y-4 overflow-y-auto'>
                 {messages.map((message, i) => (
                   <div
                     key={i}
@@ -375,9 +383,31 @@ export const GraphQL: React.FC = () => {
                   />
                 ))}
               </div>
-            )}
+              <form className={'space-y-4'} onSubmit={submitMessage}>
+                <Field className={'flex-1'}>
+                  <Label htmlFor='prompt'>Query Prompt:</Label>
+                  <Textarea
+                    id='prompt'
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    required
+                    resizable={false}
+                    ref={promptRef}
+                  />
+                </Field>
+                <div className={'flex space-x-4'}>
+                  <Button type='submit'>Generate Query</Button>
+                  <Button
+                    type='button'
+                    onClick={handleExecute}
+                    disabled={!generatedQuery}
+                  >
+                    Apply Query
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-
           <div style={{ flex: 1, overflow: 'auto' }}>
             <GraphiQL
               fetcher={fetcher}

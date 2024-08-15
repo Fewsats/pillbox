@@ -10,7 +10,7 @@
 }
 
 .graphiql-container {
-  min-height: calc(100vh - 280px);
+  min-height: calc(100vh - 300px);
 }
 
 .graphiql-container .graphiql-main .graphiql-sessions {
@@ -22,4 +22,32 @@
   border-radius: 0;
   border-left: 1px solid #e5e7eb;
   border-right: 1px solid #e5e7eb;
+}
+
+.graphiql-openai-container {
+  max-height: calc(100vh - 300px + 16px);
+}
+
+.graphiql-openai-messages-container {
+  max-height: calc(100vh - 532px);
+}
+
+#prompt {
+  min-height: 40px;
+  max-height: 200px;
+  transition: 0.3s linear;
+}
+
+code.graphql {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  border-radius: 3px;
+  background-color: #282c34;
+  color: #abb2bf;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre;
+  tab-size: 4;
+  padding: 16px;
+  margin: 4px 0;
 }
