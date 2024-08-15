@@ -375,6 +375,11 @@ export const GraphQL: React.FC = () => {
               className={`graphiql-query-input flex min-w-96 flex-1 shrink-0 flex-col space-y-4 ${chatOpen ? 'opacity-100' : 'opacity-0'} transition-all duration-300 ease-in-out`}
             >
               <div className='graphiql-openai-messages-container my-2 flex-1 space-y-4 overflow-y-auto'>
+                {
+                    (!schema && chatOpen) && <div className={'p-2 text-red-600 text-sm font-medium'}>
+                      Choose Query URL (or add url and credentials manually) to receive GraphQL schema for Assistant to use
+                    </div>
+                }
                 {messages.map((message, i) => (
                   <div
                     key={i}
@@ -396,7 +401,10 @@ export const GraphQL: React.FC = () => {
                   />
                 </Field>
                 <div className={'flex space-x-4'}>
-                  <Button type='submit'>Generate Query</Button>
+                  <Button
+                      type='submit'
+                      disabled={!schema}
+                  >Generate Query</Button>
                   <Button
                     type='button'
                     onClick={handleExecute}
