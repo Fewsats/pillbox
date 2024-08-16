@@ -29,7 +29,7 @@
 }
 
 .graphiql-openai-messages-container {
-  max-height: calc(100vh - 532px);
+  max-height: calc(100vh - 500px);
 }
 
 #prompt {
@@ -50,4 +50,8 @@ code.graphql {
   tab-size: 4;
   padding: 16px;
   margin: 4px 0;
+}
+
+.graphiql-main > div:first-child {
+  min-width: 320px !important;
 }

@@ -19,19 +19,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import { getIntrospectionQuery } from 'graphql';
 // @ts-ignore
 import { request, gql } from 'graphql-request';
-import { OpenAI } from 'openai';
-import { Textarea } from '../components/catalyst/textarea';
-import { Button } from '../components/catalyst/button';
-import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import OpenAIAssistant from '../components/OpenAIAssistant';
 
 const introspectionQuery = gql`
   ${getIntrospectionQuery()}
 `;
-
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_KEY,
-  dangerouslyAllowBrowser: true,
-});
 
 type Option = {
   id: string;
@@ -85,16 +77,6 @@ export const GraphQL: React.FC = () => {
     null
   );
   const [schema, setSchema] = useState<any | null>(null);
-  const [prompt, setPrompt] = useState('');
-  const [generatedQuery, setGeneratedQuery] = useState('');
-  const [query, setQuery] = useState('');
-  const [toExecute, setToExecute] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState<
-    { role: 'assistant' | 'user'; message: string }[]
-  >([]);
-
-  const promptRef: React.RefObject<HTMLTextAreaElement> = useRef(null);
 
   useEffect(() => {
     const isValid = /^[^:]+:[^:]+$/.test(l402Credentials.trim());
@@ -103,8 +85,6 @@ export const GraphQL: React.FC = () => {
 
   useEffect(() => {
     setSchema(null);
-    setGeneratedQuery('');
-    setMessages([]);
   }, [url]);
 
   const fetcher: Fetcher = useCallback(
@@ -187,122 +167,6 @@ export const GraphQL: React.FC = () => {
     [url, l402Credentials, isValidCredentials, schema]
   );
 
-  const submitMessage = async (e: any) => {
-    // @ts-ignore
-    e.preventDefault();
-
-    setMessages((prevState) => [
-      ...prevState,
-      {
-        role: 'user',
-        message: `<p>${prompt}</p>`,
-      },
-    ]);
-
-    setPrompt('');
-
-    generateQuery();
-  };
-
-  const generateQuery = async () => {
-    if (!schema) {
-      // toast.error('GraphQL schema not available');
-      // return;
-    }
-
-    try {
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini', // Choose the appropriate model
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a helpful assistant that generates GraphQL queries based on the provided schema and user prompt.',
-          },
-          {
-            role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${prompt}`,
-          },
-        ],
-        // max_tokens: 150,  // Adjust as necessary
-      });
-
-      const { formattedResponse, graphqlQuery } = formatOpenAIResponse(
-        response?.choices[0]?.message?.content?.trim() || ''
-      );
-      setGeneratedQuery(graphqlQuery);
-      setMessages((prevState) => [
-        ...prevState,
-        {
-          role: 'assistant',
-          message: formattedResponse,
-        },
-      ]);
-    } catch (error) {
-      console.error('Error generating query:', error);
-      toast.error('Failed to generate query');
-    }
-  };
-
-  const formatOpenAIResponse = (response: string) => {
-    // Extract the GraphQL query if it exists
-    const graphqlQueryMatch = response.match(/```graphql\n([\s\S]*?)\n```/);
-    const graphqlQuery = graphqlQueryMatch ? graphqlQueryMatch[1].trim() : '';
-
-    // Split the response into parts before and after the GraphQL query
-    const [beforeQuery, afterQuery] = response.split(
-      /```graphql\n[\s\S]*?\n```/
-    );
-
-    // Format the response with styled HTML
-    const formattedResponse = `
-    <p>${beforeQuery.replace(/\n/g, '<br>')}</p>
-    ${graphqlQuery ? `<pre><code class="graphql">${graphqlQuery}</code></pre>` : ''}
-    <p>${afterQuery ? afterQuery.replace(/\n/g, '<br>') : ''}</p>
-  `;
-
-    return {
-      formattedResponse: formattedResponse.trim(),
-      graphqlQuery,
-    };
-  };
-
-  const handleExecute = async () => {
-    setQuery(generatedQuery);
-    setToExecute(true);
-  };
-
-  useEffect(() => {
-    if (query && toExecute) {
-      const button = document.querySelector('button.graphiql-execute-button');
-
-      if (button) {
-        // @ts-ignore
-        button.click();
-      }
-
-      setToExecute(false);
-    }
-  }, [toExecute, query]);
-
-  const handleEditQuery = (newQuery: string) => {
-    setQuery(newQuery);
-  };
-
-  const toggleChat = () => {
-    setChatOpen(!chatOpen);
-  };
-
-  useEffect(() => {
-    if (!promptRef.current) {
-      return;
-    }
-
-    promptRef.current.style.height = 'auto';
-    promptRef.current.style.height =
-      Math.min(promptRef.current.scrollHeight, 200) + 'px';
-  }, [prompt]);
-
   return (
     <div className='mx-auto max-w-[1920px] p-4'>
       <Heading level={1} className='mb-4 px-4'>
@@ -360,67 +224,10 @@ export const GraphQL: React.FC = () => {
         )
         */}
         <div className={'flex space-y-4 py-2'}>
-          <div
-            className={`graphiql-openai-container flex flex-col overflow-hidden py-2 ${chatOpen ? 'max-w-96' : 'max-w-12'} transition-all duration-300 ease-in-out`}
-          >
-            <div
-              className={
-                'mt-4 w-fit cursor-pointer rounded px-2.5 py-2.5 hover:bg-gray-200/60'
-              }
-              onClick={toggleChat}
-            >
-              <ChatBubbleLeftRightIcon className={'h-6 w-6 text-gray-500'} />
-            </div>
-            <div
-              className={`graphiql-query-input flex min-w-96 flex-1 shrink-0 flex-col space-y-4 ${chatOpen ? 'opacity-100' : 'opacity-0'} transition-all duration-300 ease-in-out`}
-            >
-              <div className='graphiql-openai-messages-container my-2 flex-1 space-y-4 overflow-y-auto'>
-                {
-                    (!schema && chatOpen) && <div className={'p-2 text-red-600 text-sm font-medium'}>
-                      Choose Query URL (or add url and credentials manually) to receive GraphQL schema for Assistant to use
-                    </div>
-                }
-                {messages.map((message, i) => (
-                  <div
-                    key={i}
-                    className={`text-base text-zinc-950 dark:text-white ${message.role === 'user' ? 'ml-auto w-fit rounded-lg bg-gray-100 px-4 py-2' : ''}`}
-                    dangerouslySetInnerHTML={{ __html: message.message }}
-                  />
-                ))}
-              </div>
-              <form className={'space-y-4'} onSubmit={submitMessage}>
-                <Field className={'flex-1'}>
-                  <Label htmlFor='prompt'>Query Prompt:</Label>
-                  <Textarea
-                    id='prompt'
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    required
-                    resizable={false}
-                    ref={promptRef}
-                  />
-                </Field>
-                <div className={'flex space-x-4'}>
-                  <Button
-                      type='submit'
-                      disabled={!schema}
-                  >Generate Query</Button>
-                  <Button
-                    type='button'
-                    onClick={handleExecute}
-                    disabled={!generatedQuery}
-                  >
-                    Apply Query
-                  </Button>
-                </div>
-              </form>
-            </div>
-          </div>
           <div style={{ flex: 1, overflow: 'auto' }}>
             <GraphiQL
               fetcher={fetcher}
-              query={query}
-              onEditQuery={handleEditQuery}
+              plugins={schema ? [OpenAIAssistant] : []}
             />
           </div>
         </div>
