@@ -77,7 +77,7 @@ const AssistantTab = () => {
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(context?.schema)}, generate a GraphQL query based on this prompt: ${prompt}`,
+            content: `Given the following GraphQL schema: ${JSON.stringify(context?.schema)}, generate a GraphQL query based on this prompt: ${prompt}. Please do not include comments inside the queries you generate.`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
@@ -117,7 +117,7 @@ const AssistantTab = () => {
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(context.schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}`,
+            content: `Given the following GraphQL schema: ${JSON.stringify(context.schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}. Please do not include comments inside the queries you generate.`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
