@@ -20,12 +20,10 @@ const openai = new OpenAI({
 const AssistantTab = () => {
   const { fetcherError } = useErrorContext();
 
-  console.log('fetcherError', fetcherError);
   const context = useSchemaContext();
   const schema = useMemo(() => {
     if (context?.schema) {
-      const typeMap = context.schema.getTypeMap();
-      return Object.keys(typeMap).map((key) => typeMap[key].name);
+      return context?.schema?.getQueryType()?.getFields();
     }
     return null;
   }, [context]);
@@ -61,7 +59,7 @@ const AssistantTab = () => {
   };
 
   const generateQuery = async () => {
-    if (!context?.schema) {
+    if (!schema) {
       // toast.error('GraphQL schema not available');
       // return;
     }
@@ -77,7 +75,7 @@ const AssistantTab = () => {
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(context?.schema)}, generate a GraphQL query based on this prompt: ${prompt}. Please do not include comments inside the queries you generate.`,
+            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${prompt}. Please do not include comments inside the queries you generate.`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
@@ -101,7 +99,7 @@ const AssistantTab = () => {
   };
 
   const handleError = async (error: string) => {
-    if (!error || !context?.schema) {
+    if (!error || !schema) {
       // toast.error('GraphQL schema not available');
       return;
     }
@@ -117,7 +115,7 @@ const AssistantTab = () => {
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(context.schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}. Please do not include comments inside the queries you generate.`,
+            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}. Please do not include comments inside the queries you generate.`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
