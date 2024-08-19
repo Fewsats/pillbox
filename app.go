@@ -24,7 +24,7 @@ type App struct {
 	db  *bolt.DB
 
 	credentials *credentials.Manager
-	settings *settings.Manager
+	settings    *settings.Manager
 }
 
 // NewApp creates a new App application struct

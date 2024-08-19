@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import { UpdateSettings, Version } from '../../wailsjs/go/main/App';
 
 import { Heading, Subheading } from '../components/catalyst/heading'
@@ -15,7 +15,10 @@ export function Settings() {
     const { settings } = context;
     const { refreshSettings } = useContext(SettingsContext)!
     const [version, setVersion] = useState<string>("");
-    const [openaiKey, setOpenaiKey] = useState<string>(settings?.openai_key || '');
+    const [hasChanged, setHasChanged] = useState<boolean>(false);
+    const [values, setValues] = useState({
+        openaiKey: settings?.openai_key || ''
+    })
     const [error, setError] = useState('')
 
     useEffect(() => {
@@ -23,16 +26,15 @@ export function Settings() {
     }, []);
 
     useEffect(() => {
-        setOpenaiKey(settings?.openai_key || '');
+        setValues({
+            openaiKey: settings?.openai_key || ''
+        })
     }, [settings]);
 
     const handleSaveSettings = () => {
-        // Trim the openaiKey only when saving
-        const trimmedKey = openaiKey.trim()
-
         // Create a new Settings object with trimmed openai_key
         const data = {
-            openai_key: trimmedKey,
+            openai_key: values.openaiKey.trim(),
         };
 
         // @ts-ignore
@@ -40,6 +42,7 @@ export function Settings() {
             .then(() => {
                 // Refresh the settings from the database
                 refreshSettings();
+                setHasChanged(false);
             })
             .catch((err: any) => {
                 console.error('Error saving credentials:', err);
@@ -47,7 +50,16 @@ export function Settings() {
             });
     };
 
-    const dirty = useMemo(() => openaiKey !== settings?.openai_key, [openaiKey, settings])
+    const handleInputChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setValues({
+            ...values,
+            [name]: event.target.value
+        })
+
+        if (!hasChanged) {
+            setHasChanged(true);
+        }
+    };
 
     return (
         <div className="mx-auto max-w-4xl">
@@ -72,14 +84,14 @@ export function Settings() {
                         <Label>OpenAI API Key</Label>
                         <Input
                             name="openaiKey"
-                            value={openaiKey}
-                            onChange={(e) => setOpenaiKey(e.target.value)}
+                            value={values.openaiKey}
+                            onChange={handleInputChange('openaiKey')}
                             placeholder="Enter OpenAI API Key"
                         />
                     </Field>
                 </FieldGroup>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
-                <Button onClick={handleSaveSettings} disabled={!dirty}>
+                <Button onClick={handleSaveSettings} disabled={!hasChanged}>
                     Save Settings
                 </Button>
             </div>

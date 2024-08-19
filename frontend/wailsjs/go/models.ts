@@ -51,8 +51,6 @@ export namespace settings {
 	export class Settings {
 	    openai_key: string;
 	    // Go type: time
-	    created_at: any;
-	    // Go type: time
 	    updated_at: any;
 	
 	    static createFrom(source: any = {}) {
@@ -62,7 +60,6 @@ export namespace settings {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.openai_key = source["openai_key"];
-	        this.created_at = this.convertValues(source["created_at"], null);
 	        this.updated_at = this.convertValues(source["updated_at"], null);
 	    }
 	

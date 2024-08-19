@@ -10,19 +10,18 @@ import { DownloadFile } from './pages/DownloadFile';
 import { Settings } from './pages/Settings';
 import { KeyIcon, Cog6ToothIcon, ArrowDownTrayIcon } from '@heroicons/react/20/solid';
 import { credentials, settings } from '../wailsjs/go/models'
-import { GetSettings, ListCredentials } from '../wailsjs/go/main/App'
-
+import { GetSettings, ListCredentials } from '../wailsjs/go/main/App';
 
 // Define the context type
 type CredentialsContextType = {
-  credentials: any[]; // Replace 'any' with a more specific type if possible
+  credentials: credentials.Credential[]; // Replace 'any' with a more specific type if possible
   setCredentials: React.Dispatch<React.SetStateAction<credentials.Credential[]>>;
   refreshCredentials: () => Promise<void>;
 };
 
 // Define the context type
 type SettingsContextType = {
-    settings: any; // Replace 'any' with a more specific type if possible
+    settings: settings.Settings; // Replace 'any' with a more specific type if possible
     setSettings: React.Dispatch<React.SetStateAction<settings.Settings>>;
     refreshSettings: () => Promise<void>;
 };
