@@ -11,11 +11,11 @@ import (
 
 // Settings represents user settings.
 type Settings struct {
-    // OpenaiKey is an OpenAI API Key to use with Assistant for GraphQL queries.
+	// OpenaiKey is an OpenAI API Key to use with Assistant for GraphQL queries.
 	OpenaiKey string `json:"openai_key"`
 
-    // UpdatedAt is the time the settings were updated.
-    UpdatedAt time.Time `json:"updated_at"`
+	// UpdatedAt is the time the settings were updated.
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Manager struct {
@@ -36,15 +36,15 @@ func (m *Manager) UpdateSettings(ctx context.Context, settings *Settings) error 
 		}
 
 		key := []byte("settings")
-        value := b.Get(key)
+		value := b.Get(key)
 
-	    settings.UpdatedAt = time.Now().UTC()
+		settings.UpdatedAt = time.Now().UTC()
 
-        // Marshal the settings back to JSON
-        value, err = json.Marshal(settings)
-        if err != nil {
-            return fmt.Errorf("encode settings: %w", err)
-        }
+		// Marshal the settings back to JSON
+		value, err = json.Marshal(settings)
+		if err != nil {
+			return fmt.Errorf("encode settings: %w", err)
+		}
 
 		// Put the settings back into the bucket
 		return b.Put(key, value)
