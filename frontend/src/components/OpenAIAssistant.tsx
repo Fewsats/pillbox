@@ -61,7 +61,7 @@ const AssistantTab = () => {
   };
 
   const generateQuery = async () => {
-    if (!schema) {
+    if (!context?.schema) {
       // toast.error('GraphQL schema not available');
       // return;
     }
@@ -77,7 +77,7 @@ const AssistantTab = () => {
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${prompt}`,
+            content: `Given the following GraphQL schema: ${JSON.stringify(context?.schema)}, generate a GraphQL query based on this prompt: ${prompt}`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
@@ -101,7 +101,7 @@ const AssistantTab = () => {
   };
 
   const handleError = async (error: string) => {
-    if (!error) {
+    if (!error || !context?.schema) {
       // toast.error('GraphQL schema not available');
       return;
     }
@@ -117,7 +117,7 @@ const AssistantTab = () => {
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}`,
+            content: `Given the following GraphQL schema: ${JSON.stringify(context.schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
