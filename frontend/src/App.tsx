@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+} from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -43,6 +49,39 @@ type CredentialsContextType = {
 export const CredentialsContext = createContext<CredentialsContextType | null>(
   null
 );
+
+interface ErrorContextType {
+  fetcherError: { errors: { location: any; message: string }[] } | null;
+  setFetcherError: React.Dispatch<
+    React.SetStateAction<{
+      errors: { location: any; message: string }[];
+    } | null>
+  >;
+}
+
+const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
+
+export const ErrorProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [fetcherError, setFetcherError] = useState<{
+    errors: { location: any; message: string }[];
+  } | null>(null);
+
+  return (
+    <ErrorContext.Provider value={{ fetcherError, setFetcherError }}>
+      {children}
+    </ErrorContext.Provider>
+  );
+};
+
+export const useErrorContext = (): ErrorContextType => {
+  const context = useContext(ErrorContext);
+  if (!context) {
+    throw new Error('useErrorContext must be used within an ErrorProvider');
+  }
+  return context;
+};
 
 function SidebarContent() {
   const navigate = useNavigate();
@@ -114,21 +153,23 @@ function AppContent() {
   const navbarContent = <Navbar></Navbar>;
 
   return (
-    <CredentialsContext.Provider
-      value={{ credentials, setCredentials, refreshCredentials }}
-    >
-      <SidebarLayout sidebar={<SidebarContent />} navbar={navbarContent}>
-        <div id='App'>
-          <Routes>
-            <Route path='/' element={<Credentials />} />
-            <Route path='/credentials/:id' element={<CredentialDetails />} />
-            <Route path='/download' element={<DownloadFile />} />
-            <Route path='/graphql' element={<GraphQL />} />
-            <Route path='/settings' element={<Settings />} />
-          </Routes>
-        </div>
-      </SidebarLayout>
-    </CredentialsContext.Provider>
+    <ErrorProvider>
+      <CredentialsContext.Provider
+        value={{ credentials, setCredentials, refreshCredentials }}
+      >
+        <SidebarLayout sidebar={<SidebarContent />} navbar={navbarContent}>
+          <div id='App'>
+            <Routes>
+              <Route path='/' element={<Credentials />} />
+              <Route path='/credentials/:id' element={<CredentialDetails />} />
+              <Route path='/download' element={<DownloadFile />} />
+              <Route path='/graphql' element={<GraphQL />} />
+              <Route path='/settings' element={<Settings />} />
+            </Routes>
+          </div>
+        </SidebarLayout>
+      </CredentialsContext.Provider>
+    </ErrorProvider>
   );
 }
 

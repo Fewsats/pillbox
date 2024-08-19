@@ -20,7 +20,7 @@ type Credential struct {
 	Location string `json:"location"`
 
 	// Method is the type of the request. Possible values are 'POST' | 'GET' | 'PUT' | 'DELETE'
-    Method string `json:"method"`
+	Method string `json:"method"`
 
 	// Macaroon is the hex-encoded macaroon.
 	Macaroon string `json:"macaroon"`

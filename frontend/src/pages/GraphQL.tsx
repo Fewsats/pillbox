@@ -4,7 +4,8 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  useRef,
+  createContext,
+  ReactNode,
 } from 'react';
 import { Heading } from '../components/catalyst/heading';
 
@@ -13,7 +14,7 @@ import type { Fetcher } from '@graphiql/toolkit';
 import 'graphiql/graphiql.min.css';
 import { Field, Label } from '../components/catalyst/fieldset';
 import { Combobox } from '../components/catalyst/combobox';
-import { CredentialsContext } from '../App';
+import { CredentialsContext, useErrorContext } from '../App';
 import { Input } from '../components/catalyst/input';
 import { toast, ToastContainer } from 'react-toastify';
 import { getIntrospectionQuery } from 'graphql';
@@ -41,6 +42,8 @@ export const GraphQL: React.FC = () => {
       'CredentialsContext must be used within a CredentialsProvider'
     );
   const { credentials } = context;
+
+  const { setFetcherError } = useErrorContext();
 
   const options = useMemo(() => {
     const filtered = credentials
@@ -148,6 +151,9 @@ export const GraphQL: React.FC = () => {
             ok: false,
           });
           toast.error('Failed to fetch URL');
+          const result = await response.json();
+          setFetcherError(result); // Set error in context
+
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 

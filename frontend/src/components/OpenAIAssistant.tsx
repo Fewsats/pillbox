@@ -10,6 +10,7 @@ import { Textarea } from './catalyst/textarea';
 import { Button } from './catalyst/button';
 import { toast } from 'react-toastify';
 import { OpenAI } from 'openai';
+import { useErrorContext } from '../App';
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_KEY,
@@ -17,6 +18,9 @@ const openai = new OpenAI({
 });
 
 const AssistantTab = () => {
+  const { fetcherError } = useErrorContext();
+
+  console.log('fetcherError', fetcherError);
   const context = useSchemaContext();
   const schema = useMemo(() => {
     if (context?.schema) {
@@ -30,6 +34,7 @@ const AssistantTab = () => {
   const editorContext = useEditorContext();
 
   const [prompt, setPrompt] = useState('');
+  const [promptPrev, setPromptPrev] = useState('');
   const [generatedQuery, setGeneratedQuery] = useState('');
   const [messages, setMessages] = useState<
     { role: 'assistant' | 'user'; message: string }[]
@@ -49,6 +54,7 @@ const AssistantTab = () => {
       },
     ]);
 
+    setPromptPrev(prompt);
     setPrompt('');
 
     generateQuery();
@@ -72,6 +78,46 @@ const AssistantTab = () => {
           {
             role: 'user',
             content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${prompt}`,
+          },
+        ],
+        // max_tokens: 150,  // Adjust as necessary
+      });
+
+      const { formattedResponse, graphqlQuery } = formatOpenAIResponse(
+        response?.choices[0]?.message?.content?.trim() || ''
+      );
+      setGeneratedQuery(graphqlQuery);
+      setMessages((prevState) => [
+        ...prevState,
+        {
+          role: 'assistant',
+          message: formattedResponse,
+        },
+      ]);
+    } catch (error) {
+      console.error('Error generating query:', error);
+      toast.error('Failed to generate query');
+    }
+  };
+
+  const handleError = async (error: string) => {
+    if (!error) {
+      // toast.error('GraphQL schema not available');
+      return;
+    }
+
+    try {
+      const response = await openai.chat.completions.create({
+        model: 'gpt-4o-mini', // Choose the appropriate model
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a helpful assistant that generates GraphQL queries based on the provided schema and user prompt.',
+          },
+          {
+            role: 'user',
+            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
@@ -123,6 +169,12 @@ const AssistantTab = () => {
       executionContext.run();
     }
   };
+
+  useEffect(() => {
+    if (fetcherError?.errors?.length) {
+      handleError(JSON.stringify(fetcherError?.errors));
+    }
+  }, [fetcherError]);
 
   return (
     <div
