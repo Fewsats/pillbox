@@ -11,6 +11,7 @@ import (
 	bolt "go.etcd.io/bbolt"
 
 	"pillbox/pkg/credentials"
+	"pillbox/pkg/settings"
 )
 
 const (
@@ -23,11 +24,12 @@ type App struct {
 	db  *bolt.DB
 
 	credentials *credentials.Manager
+	settings    *settings.Manager
 }
 
 // NewApp creates a new App application struct
-func NewApp(db *bolt.DB, credMgr *credentials.Manager) *App {
-	return &App{db: db, credentials: credMgr}
+func NewApp(db *bolt.DB, credMgr *credentials.Manager, settingsMgr *settings.Manager) *App {
+	return &App{db: db, credentials: credMgr, settings: settingsMgr}
 }
 
 // startup is called when the app starts. The context is saved
@@ -93,4 +95,27 @@ func (a *App) SaveFile(fileName string, data []byte) error {
 
 func (a *App) Version() string {
 	return Version
+}
+
+func (a *App) UpdateSettings(settings *settings.Settings) error {
+	ctxt, cancel := context.WithTimeout(a.ctx, DefaultTimeout)
+	defer cancel()
+
+	if err := a.settings.UpdateSettings(ctxt, settings); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *App) GetSettings() (*settings.Settings, error) {
+	ctx, cancel := context.WithTimeout(a.ctx, DefaultTimeout)
+	defer cancel()
+
+	settings, err := a.settings.GetSettings(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("settings: %w", err)
+	}
+
+	return settings, nil
 }

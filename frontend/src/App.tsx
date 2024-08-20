@@ -33,22 +33,30 @@ import {
   ArrowDownTrayIcon,
   CodeBracketIcon,
 } from '@heroicons/react/20/solid';
-import { credentials } from '../wailsjs/go/models';
-import { ListCredentials } from '../wailsjs/go/main/App';
+import { credentials, settings } from '../wailsjs/go/models';
+import { GetSettings, ListCredentials } from '../wailsjs/go/main/App';
 
 // Define the context type
 type CredentialsContextType = {
-  credentials: any[]; // Replace 'any' with a more specific type if possible
+  credentials: credentials.Credential[]; // Replace 'any' with a more specific type if possible
   setCredentials: React.Dispatch<
     React.SetStateAction<credentials.Credential[]>
   >;
   refreshCredentials: () => Promise<void>;
 };
 
+// Define the context type
+type SettingsContextType = {
+  settings: settings.Settings; // Replace 'any' with a more specific type if possible
+  setSettings: React.Dispatch<React.SetStateAction<settings.Settings>>;
+  refreshSettings: () => Promise<void>;
+};
+
 // Create the context with the correct type
 export const CredentialsContext = createContext<CredentialsContextType | null>(
   null
 );
+export const SettingsContext = createContext<SettingsContextType | null>(null);
 
 interface ErrorContextType {
   fetcherError: { errors: { location: any; message: string }[] } | null;
@@ -128,6 +136,7 @@ function SidebarContent() {
 
 function AppContent() {
   const [credentials, setCredentials] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>({});
   const location = useLocation();
 
   const fetchCredentials = async () => {
@@ -143,10 +152,27 @@ function AppContent() {
     await fetchCredentials();
   };
 
+  const fetchSettings = async () => {
+    try {
+      const data = await GetSettings();
+      setSettings(data);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
+
+  const refreshSettings = async () => {
+    await fetchSettings();
+  };
+
   useEffect(() => {
     // Fetch credentials when the route changes
     if (location.pathname === '/') {
       fetchCredentials();
+    }
+    // Fetch settings when the route changes
+    if (location.pathname === '/settings') {
+      fetchSettings();
     }
   }, [location]);
 
@@ -157,17 +183,24 @@ function AppContent() {
       <CredentialsContext.Provider
         value={{ credentials, setCredentials, refreshCredentials }}
       >
-        <SidebarLayout sidebar={<SidebarContent />} navbar={navbarContent}>
-          <div id='App'>
-            <Routes>
-              <Route path='/' element={<Credentials />} />
-              <Route path='/credentials/:id' element={<CredentialDetails />} />
-              <Route path='/download' element={<DownloadFile />} />
-              <Route path='/graphql' element={<GraphQL />} />
-              <Route path='/settings' element={<Settings />} />
-            </Routes>
-          </div>
-        </SidebarLayout>
+        <SettingsContext.Provider
+          value={{ settings, setSettings, refreshSettings }}
+        >
+          <SidebarLayout sidebar={<SidebarContent />} navbar={navbarContent}>
+            <div id='App'>
+              <Routes>
+                <Route path='/' element={<Credentials />} />
+                <Route
+                  path='/credentials/:id'
+                  element={<CredentialDetails />}
+                />
+                <Route path='/download' element={<DownloadFile />} />
+                <Route path='/graphql' element={<GraphQL />} />
+                <Route path='/settings' element={<Settings />} />
+              </Routes>
+            </div>
+          </SidebarLayout>
+        </SettingsContext.Provider>
       </CredentialsContext.Provider>
     </ErrorProvider>
   );
