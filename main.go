@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"pillbox/pkg/credentials"
+	"pillbox/pkg/settings"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -75,9 +76,10 @@ func main() {
 	defer db.Close()
 
 	credMgr := credentials.NewManager(db)
+	settingsMgr := settings.NewManager(db)
 
 	// Create an instance of the app structure
-	app := NewApp(db, credMgr)
+	app := NewApp(db, credMgr, settingsMgr)
 
 	opts := &options.App{
 		Title:  "pillbox",
