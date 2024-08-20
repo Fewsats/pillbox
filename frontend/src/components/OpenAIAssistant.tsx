@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import {
   useSchemaContext,
@@ -10,14 +10,19 @@ import { Textarea } from './catalyst/textarea';
 import { Button } from './catalyst/button';
 import { toast } from 'react-toastify';
 import { OpenAI } from 'openai';
-import { useErrorContext } from '../App';
-
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_KEY,
-  dangerouslyAllowBrowser: true,
-});
+import { SettingsContext, useErrorContext } from '../App';
 
 const AssistantTab = () => {
+  const settingsContext = useContext(SettingsContext);
+  if (!settingsContext)
+    throw new Error('SettingsContext must be used within a SettingsProvider');
+  const { settings } = settingsContext;
+
+  const openai = new OpenAI({
+    apiKey: settings.openai_key,
+    dangerouslyAllowBrowser: true,
+  });
+
   const { fetcherError } = useErrorContext();
 
   const context = useSchemaContext();

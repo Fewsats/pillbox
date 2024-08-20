@@ -27,7 +27,7 @@ const METHOD_OPTIONS = [
 
 type Option = {
   name: string;
-  id: string;
+  id: string | number;
 };
 
 export function AddCredentialModal() {

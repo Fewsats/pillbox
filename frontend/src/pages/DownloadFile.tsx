@@ -11,7 +11,7 @@ import { Combobox } from '../components/catalyst/combobox';
 import { Input } from '../components/catalyst/input';
 
 type Option = {
-  id: string;
+  id: string | number;
   name: string;
   details?: {
     url: string;

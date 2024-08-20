@@ -4,8 +4,6 @@ import React, {
   useCallback,
   useContext,
   useMemo,
-  createContext,
-  ReactNode,
 } from 'react';
 import { Heading } from '../components/catalyst/heading';
 
@@ -14,7 +12,7 @@ import type { Fetcher } from '@graphiql/toolkit';
 import 'graphiql/graphiql.min.css';
 import { Field, Label } from '../components/catalyst/fieldset';
 import { Combobox } from '../components/catalyst/combobox';
-import { CredentialsContext, useErrorContext } from '../App';
+import { CredentialsContext, SettingsContext, useErrorContext } from '../App';
 import { Input } from '../components/catalyst/input';
 import { toast, ToastContainer } from 'react-toastify';
 import { getIntrospectionQuery } from 'graphql';
@@ -27,7 +25,7 @@ const introspectionQuery = gql`
 `;
 
 type Option = {
-  id: string;
+  id: string | number;
   name: string;
   details?: {
     url: string;
@@ -42,6 +40,11 @@ export const GraphQL: React.FC = () => {
       'CredentialsContext must be used within a CredentialsProvider'
     );
   const { credentials } = context;
+
+  const settingsContext = useContext(SettingsContext);
+  if (!settingsContext)
+    throw new Error('SettingsContext must be used within a SettingsProvider');
+  const { settings } = settingsContext;
 
   const { setFetcherError } = useErrorContext();
 
@@ -233,7 +236,7 @@ export const GraphQL: React.FC = () => {
           <div style={{ flex: 1, overflow: 'auto' }}>
             <GraphiQL
               fetcher={fetcher}
-              plugins={schema ? [OpenAIAssistant] : []}
+              plugins={schema && settings.openai_key ? [OpenAIAssistant] : []}
             />
           </div>
         </div>

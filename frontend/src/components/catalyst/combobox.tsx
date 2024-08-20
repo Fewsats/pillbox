@@ -5,7 +5,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 
 type Option = {
   name: string;
-  id: string;
+  id: string | number;
 };
 
 export const Combobox = forwardRef(function Input(

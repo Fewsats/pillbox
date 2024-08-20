@@ -166,15 +166,9 @@ function AppContent() {
   };
 
   useEffect(() => {
-    // Fetch credentials when the route changes
-    if (location.pathname === '/') {
-      fetchCredentials();
-    }
-    // Fetch settings when the route changes
-    if (location.pathname === '/settings') {
-      fetchSettings();
-    }
-  }, [location]);
+    fetchCredentials();
+    fetchSettings();
+  }, []);
 
   const navbarContent = <Navbar></Navbar>;
 
