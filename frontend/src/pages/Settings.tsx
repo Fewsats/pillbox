@@ -16,13 +16,13 @@ import {
   init,
   onConnected,
   launchModal,
-  disconnect,
   onModalClosed,
   closeModal,
   getConnectorConfig
 } from '@getalby/bitcoin-connect-react';
 
-import {ConnectorConfig} from "@getalby/bitcoin-connect/dist/types/ConnectorConfig";
+import { ConnectorConfig } from "@getalby/bitcoin-connect/dist/types/ConnectorConfig";
+import { ToastContainer } from "react-toastify";
 
 export function Settings() {
   const context = useContext(SettingsContext);
@@ -50,12 +50,10 @@ export function Settings() {
     })
 
     onModalClosed(() => {
-      disconnect();
     })
 
     return () => {
       closeModal();
-      disconnect();
     }
   }, []);
 
@@ -169,6 +167,7 @@ export function Settings() {
           </Button>
         </div>
       </section>
+      <ToastContainer />
     </div>
   );
 }
