@@ -12,6 +12,7 @@
     "format:fix": "prettier --write --ignore-path .gitignore ."
   },
   "dependencies": {
+    "@getalby/bitcoin-connect-react": "^3.6.2",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.4",
     "axios": "^1.7.2",

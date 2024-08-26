@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { UpdateSettings, Version } from '../../wailsjs/go/main/App';
 
 import { Heading, Subheading } from '../components/catalyst/heading';
@@ -8,6 +8,21 @@ import { Field, FieldGroup, Label } from '../components/catalyst/fieldset';
 import { Input } from '../components/catalyst/input';
 import { Button } from '../components/catalyst/button';
 import { SettingsContext } from '../App';
+import {
+  BoltSlashIcon,
+  BoltIcon
+} from '@heroicons/react/24/outline';
+import {
+  init,
+  onConnected,
+  launchModal,
+  disconnect,
+  onModalClosed,
+  closeModal,
+  getConnectorConfig
+} from '@getalby/bitcoin-connect-react';
+
+import {ConnectorConfig} from "@getalby/bitcoin-connect/dist/types/ConnectorConfig";
 
 export function Settings() {
   const context = useContext(SettingsContext);
@@ -21,6 +36,28 @@ export function Settings() {
     openaiKey: settings?.openai_key || '',
   });
   const [error, setError] = useState('');
+  const [walletConfig, setWalletConfig] = useState<ConnectorConfig | undefined>(undefined);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      init({ appName: 'Fewsats Pillbox' });
+    }
+
+    onConnected((provider) => {
+      console.log('provider', provider)
+      const config = getConnectorConfig();
+      setWalletConfig(config);
+    })
+
+    onModalClosed(() => {
+      disconnect();
+    })
+
+    return () => {
+      closeModal();
+      disconnect();
+    }
+  }, []);
 
   useEffect(() => {
     Version().then(setVersion);
@@ -63,6 +100,10 @@ export function Settings() {
       }
     };
 
+  const handleConnectWallet = () => {
+    launchModal();
+  };
+
   return (
     <div className='mx-auto max-w-4xl'>
       <Heading>Settings</Heading>
@@ -97,6 +138,37 @@ export function Settings() {
           Save Settings
         </Button>
       </div>
+
+      <Divider className='my-10' soft />
+
+      <section className='flex flex-col gap-x-8 gap-y-4 sm:grid-cols-2'>
+        <div className={'grid gap-x-8 gap-y-6 sm:grid-cols-2'}>
+          <div className='space-y-1'>
+            <Subheading>Wallet</Subheading>
+            <Text>
+              {
+                walletConfig
+                    ? 'Wallet is connected'
+                    : 'Wallet is not connected'
+              }
+            </Text>
+          </div>
+          <div>
+            <Text>
+              {
+                walletConfig
+                    ? <BoltIcon className={'h-5 w-5 text-zinc-500 dark:text-zinc-400'}/>
+                    : <BoltSlashIcon className={'h-5 w-5 text-zinc-500 dark:text-zinc-400'}/>
+              }
+            </Text>
+          </div>
+        </div>
+        <div>
+          <Button onClick={handleConnectWallet}>
+            Connect your Lightning Wallet
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
