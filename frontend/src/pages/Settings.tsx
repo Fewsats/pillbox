@@ -8,21 +8,19 @@ import { Field, FieldGroup, Label } from '../components/catalyst/fieldset';
 import { Input } from '../components/catalyst/input';
 import { Button } from '../components/catalyst/button';
 import { SettingsContext } from '../App';
-import {
-  BoltSlashIcon,
-  BoltIcon
-} from '@heroicons/react/24/outline';
+import { BoltSlashIcon, BoltIcon } from '@heroicons/react/24/outline';
 import {
   init,
+  disconnect,
   onConnected,
+  onDisconnected,
   launchModal,
   onModalClosed,
   closeModal,
-  getConnectorConfig
+  getConnectorConfig,
 } from '@getalby/bitcoin-connect-react';
 
-import { ConnectorConfig } from "@getalby/bitcoin-connect/dist/types/ConnectorConfig";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
 
 export function Settings() {
   const context = useContext(SettingsContext);
@@ -32,49 +30,67 @@ export function Settings() {
   const { refreshSettings } = useContext(SettingsContext)!;
   const [version, setVersion] = useState<string>('');
   const [hasChanged, setHasChanged] = useState<boolean>(false);
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<{
+    openaiKey: string;
+  }>({
     openaiKey: settings?.openai_key || '',
   });
   const [error, setError] = useState('');
-  const [walletConfig, setWalletConfig] = useState<ConnectorConfig | undefined>(undefined);
+  const [walletConfig, setWalletConfig] = useState(
+    settings?.wallet_config || undefined
+  );
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       init({ appName: 'Fewsats Pillbox' });
     }
 
-    onConnected((provider) => {
-      console.log('provider', provider)
-      const config = getConnectorConfig();
-      setWalletConfig(config);
-    })
+    Version().then(setVersion);
 
-    onModalClosed(() => {
-    })
+    onConnected((provider) => {
+      console.log('provider', provider);
+      const config = getConnectorConfig();
+      console.log('config', config);
+      setWalletConfig(config);
+    });
+
+    onDisconnected(() => {
+      setWalletConfig(undefined);
+    });
+
+    onModalClosed(() => {});
 
     return () => {
       closeModal();
-    }
+    };
   }, []);
 
   useEffect(() => {
-    Version().then(setVersion);
-  }, []);
+    if (
+      !settings.wallet_config ||
+      JSON.stringify(settings.wallet_config) !== JSON.stringify(walletConfig)
+    ) {
+      handleSaveSettings();
+    }
+  }, [walletConfig, values]);
 
   useEffect(() => {
     setValues({
       openaiKey: settings?.openai_key || '',
     });
+
+    setWalletConfig(settings?.wallet_config || undefined);
   }, [settings]);
 
   const handleSaveSettings = () => {
     // Create a new Settings object with trimmed openai_key
-    const data = {
+    const settings = {
       openai_key: values.openaiKey.trim(),
+      wallet_config: walletConfig || null,
     };
 
     // @ts-ignore
-    UpdateSettings(data)
+    UpdateSettings(settings)
       .then(() => {
         // Refresh the settings from the database
         refreshSettings();
@@ -100,6 +116,10 @@ export function Settings() {
 
   const handleConnectWallet = () => {
     launchModal();
+  };
+
+  const handleDisconnectWallet = () => {
+    disconnect();
   };
 
   return (
@@ -144,27 +164,32 @@ export function Settings() {
           <div className='space-y-1'>
             <Subheading>Wallet</Subheading>
             <Text>
-              {
-                walletConfig
-                    ? 'Wallet is connected'
-                    : 'Wallet is not connected'
-              }
+              {walletConfig ? 'Wallet is connected' : 'Wallet is not connected'}
             </Text>
           </div>
           <div>
             <Text>
-              {
-                walletConfig
-                    ? <BoltIcon className={'h-5 w-5 text-zinc-500 dark:text-zinc-400'}/>
-                    : <BoltSlashIcon className={'h-5 w-5 text-zinc-500 dark:text-zinc-400'}/>
-              }
+              {walletConfig ? (
+                <BoltIcon
+                  className={'h-5 w-5 text-zinc-500 dark:text-zinc-400'}
+                />
+              ) : (
+                <BoltSlashIcon
+                  className={'h-5 w-5 text-zinc-500 dark:text-zinc-400'}
+                />
+              )}
             </Text>
           </div>
         </div>
-        <div>
+        <div className={'flex gap-4'}>
           <Button onClick={handleConnectWallet}>
-            Connect your Lightning Wallet
+            {walletConfig
+              ? 'Open your Lightning Wallet'
+              : 'Connect your Lightning Wallet'}
           </Button>
+          {walletConfig && (
+            <Button onClick={handleDisconnectWallet}>Disconnect</Button>
+          )}
         </div>
       </section>
       <ToastContainer />
