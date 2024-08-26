@@ -84,13 +84,13 @@ export function Settings() {
 
   const handleSaveSettings = () => {
     // Create a new Settings object with trimmed openai_key
-    const settings = {
+    const data = {
       openai_key: values.openaiKey.trim(),
       wallet_config: walletConfig || null,
     };
 
     // @ts-ignore
-    UpdateSettings(settings)
+    UpdateSettings(data)
       .then(() => {
         // Refresh the settings from the database
         refreshSettings();
