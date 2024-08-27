@@ -198,7 +198,7 @@ export const GraphQL: React.FC = () => {
             />
           </Field>
           <Field className={'flex-1'}>
-            <Label htmlFor='url'>File URL:</Label>
+            <Label htmlFor='url'>API endpoint:</Label>
             <Input
               id='url'
               type='url'
