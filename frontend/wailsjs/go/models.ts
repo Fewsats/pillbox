@@ -74,6 +74,7 @@ export namespace settings {
 	}
 	export class Settings {
 	    openai_key: string;
+	    hub_key: string;
 	    // Go type: time
 	    updated_at: any;
 	    wallet_config?: WalletConfig;
@@ -85,6 +86,7 @@ export namespace settings {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.openai_key = source["openai_key"];
+	        this.hub_key = source["hub_key"];
 	        this.updated_at = this.convertValues(source["updated_at"], null);
 	        this.wallet_config = this.convertValues(source["wallet_config"], WalletConfig);
 	    }

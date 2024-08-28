@@ -155,7 +155,7 @@ const AssistantTab = () => {
 
     // Format the response with styled HTML
     const formattedResponse = `
-    <p>${beforeQuery.replace(/\n/g, '<br>')}</p>
+    <p class="text-base text-zinc-950 dark:text-white">${beforeQuery.replace(/\n/g, '<br>')}</p>
     ${graphqlQuery ? `<pre><code class="graphql">${graphqlQuery}</code></pre>` : ''}
     <p>${afterQuery ? afterQuery.replace(/\n/g, '<br>') : ''}</p>
   `;
@@ -193,7 +193,7 @@ const AssistantTab = () => {
         {messages.map((message, i) => (
           <div
             key={i}
-            className={`text-base text-zinc-950 dark:text-white ${message.role === 'user' ? 'ml-auto w-fit rounded-lg bg-gray-100 px-4 py-2' : ''}`}
+            className={`text-base text-zinc-950 dark:text-white ${message.role === 'user' ? 'ml-auto w-fit rounded-lg bg-gray-100 dark:bg-zinc-800 px-4 py-2' : ''}`}
             dangerouslySetInnerHTML={{ __html: message.message }}
           />
         ))}

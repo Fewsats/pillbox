@@ -32,8 +32,10 @@ export function Settings() {
   const [hasChanged, setHasChanged] = useState<boolean>(false);
   const [values, setValues] = useState<{
     openaiKey: string;
+    hubKey: string;
   }>({
     openaiKey: settings?.openai_key || '',
+    hubKey: settings?.hub_key || '',
   });
   const [error, setError] = useState('');
   const [walletConfig, setWalletConfig] = useState(
@@ -42,7 +44,10 @@ export function Settings() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      init({ appName: 'Fewsats Pillbox' });
+      init({
+        appName: 'Fewsats Pillbox',
+        filters: ["nwc"],
+      });
     }
 
     Version().then(setVersion);
@@ -67,8 +72,7 @@ export function Settings() {
 
   useEffect(() => {
     if (
-      !settings.wallet_config ||
-      JSON.stringify(settings.wallet_config) !== JSON.stringify(walletConfig)
+      JSON.stringify(settings.wallet_config) !== JSON.stringify(walletConfig || null)
     ) {
       handleSaveSettings();
     }
@@ -77,6 +81,7 @@ export function Settings() {
   useEffect(() => {
     setValues({
       openaiKey: settings?.openai_key || '',
+      hubKey: settings?.hub_key || '',
     });
 
     setWalletConfig(settings?.wallet_config || undefined);
@@ -86,6 +91,7 @@ export function Settings() {
     // Create a new Settings object with trimmed openai_key
     const data = {
       openai_key: values.openaiKey.trim(),
+      hub_key: values.hubKey.trim(),
       wallet_config: walletConfig || null,
     };
 
@@ -114,7 +120,7 @@ export function Settings() {
       }
     };
 
-  const handleConnectWallet = () => {
+  const handleConnectWallet = async () => {
     launchModal();
   };
 
@@ -140,7 +146,7 @@ export function Settings() {
       <Divider className='my-10' soft />
 
       <div className={'space-y-4'}>
-        <FieldGroup>
+        <FieldGroup className={'space-y-4'}>
           <Field>
             <Label>OpenAI API Key</Label>
             <Input
@@ -148,6 +154,15 @@ export function Settings() {
               value={values.openaiKey}
               onChange={handleInputChange('openaiKey')}
               placeholder='Enter OpenAI API Key'
+            />
+          </Field>
+          <Field>
+            <Label>PayWithHub API Key</Label>
+            <Input
+                name='hubKey'
+                value={values.hubKey}
+                onChange={handleInputChange('hubKey')}
+                placeholder='Enter PayWithHub API Key'
             />
           </Field>
         </FieldGroup>
