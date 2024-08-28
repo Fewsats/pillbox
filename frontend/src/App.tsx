@@ -184,7 +184,7 @@ function AppContent() {
           value={{ settings, setSettings, refreshSettings }}
         >
           <SidebarLayout sidebar={<SidebarContent />} navbar={navbarContent}>
-            <div id='App'>
+            <div id='App' className={'h-full'}>
               <Routes>
                 <Route path='/' element={<Credentials />} />
                 <Route

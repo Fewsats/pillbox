@@ -9,9 +9,7 @@
   }
 }
 
-.graphiql-container {
-  min-height: calc(100vh - 300px);
-}
+.graphiql-container {}
 
 .graphiql-container .graphiql-main .graphiql-sessions {
   background-color: transparent !important;
@@ -34,11 +32,10 @@
 }
 
 .graphiql-openai-container {
-  max-height: calc(100vh - 300px + 16px);
+  height: 100%;
 }
 
-.graphiql-openai-messages-container {
-  max-height: calc(100vh - 500px);
+.graphiql-openai-messages-container {;
 }
 
 #prompt {
@@ -63,4 +60,13 @@ code.graphql {
 
 .graphiql-main > div:first-child {
   min-width: 320px !important;
+  position: relative;
+}
+
+.graphiql-plugin{
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }

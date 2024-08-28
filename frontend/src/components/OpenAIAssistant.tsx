@@ -76,11 +76,11 @@ const AssistantTab = () => {
           {
             role: 'system',
             content:
-              'You are a helpful assistant that generates GraphQL queries based on the provided schema and user prompt.',
+                'You are a helpful assistant. Use the GraphQL schema to answer the question appropriately. Whenever you generate example queries, provide sensible default values so they are ready to use. Format the queries with indentation and line breaks. The generated queries should be named, like `query GetUserByID { ... }`',
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${prompt}. Please do not include comments inside the queries you generate.`,
+            content: `Question: ${prompt}\n\nGraphQL Schema: ${JSON.stringify(schema)}. Please do not include comments inside the queries code you generate.`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
@@ -116,11 +116,11 @@ const AssistantTab = () => {
           {
             role: 'system',
             content:
-              'You are a helpful assistant that generates GraphQL queries based on the provided schema and user prompt.',
+              'You are a helpful assistant. Use the GraphQL schema to answer the question appropriately. Whenever you generate example queries, provide sensible default values so they are ready to use. Format the queries with indentation and line breaks. The generated queries should be named, like `query GetUserByID { ... }`',
           },
           {
             role: 'user',
-            content: `Given the following GraphQL schema: ${JSON.stringify(schema)}, generate a GraphQL query based on this prompt: ${promptPrev}, considering that your previous suggested query ${generatedQuery} failed with error ${error}. Please do not include comments inside the queries you generate.`,
+            content: `Question: ${promptPrev}\n\nGraphQL Schema: ${JSON.stringify(schema)}, considering that your previous suggested query ${generatedQuery} failed with error ${error}. Please do not include comments inside the queries code you generate.`,
           },
         ],
         // max_tokens: 150,  // Adjust as necessary
@@ -144,25 +144,54 @@ const AssistantTab = () => {
   };
 
   const formatOpenAIResponse = (response: string) => {
-    // Extract the GraphQL query if it exists
-    const graphqlQueryMatch = response.match(/```graphql\n([\s\S]*?)\n```/);
-    const graphqlQuery = graphqlQueryMatch ? graphqlQueryMatch[1].trim() : '';
+    // Match all code blocks (generic) in the response
+    const codeBlockMatches = [...response.matchAll(/```([a-zA-Z0-9]*)\n([\s\S]*?)\n```/g)];
+    const graphqlQueries = codeBlockMatches.map(match => ({
+      language: match[1],
+      code: match[2].trim()
+    }));
 
-    // Split the response into parts before and after the GraphQL query
-    const [beforeQuery, afterQuery] = response.split(
-      /```graphql\n[\s\S]*?\n```/
-    );
+    // Split the response by code block delimiters
+    const parts = response.split(/```[a-zA-Z0-9]*\n[\s\S]*?\n```/);
 
-    // Format the response with styled HTML
-    const formattedResponse = `
-    <p class="text-base text-zinc-950 dark:text-white">${beforeQuery.replace(/\n/g, '<br>')}</p>
-    ${graphqlQuery ? `<pre><code class="graphql">${graphqlQuery}</code></pre>` : ''}
-    <p>${afterQuery ? afterQuery.replace(/\n/g, '<br>') : ''}</p>
-  `;
+    // Build the formatted response with styled HTML
+    let formattedResponse = '';
+
+    parts.forEach((part: string, index: number) => {
+      // Handle text marked with ### (heading)
+      let formattedPart = part.replace(/###\s+(.*?)(?=\n|$)/g, (match, heading) => {
+        return `<h3 class="text-lg font-semibold text-zinc-950 dark:text-white">${heading.trim()}</h3>`;
+      });
+
+      // Handle text marked with ** (bold)
+      formattedPart = formattedPart.replace(/\*\*(.*?)\*\*/g, (match, boldText) => {
+        return `<span class="font-semibold">${boldText.trim()}</span>`;
+      });
+
+      // Handle list items for both unordered and ordered lists
+      formattedPart = formattedPart.replace(/(^|\n)([\*\-\d\.]+)\s+(.*?)(?=\n|$)/g, (match, p1, marker, item) => {
+        return `${p1}<li>${item.trim()}</li>`;
+      });
+
+      // Wrap list items in <ul> or <ol>
+      formattedPart = formattedPart.replace(/(<li>.*?<\/li>)(?:(?=\n)|$)/gs, (list) => {
+        // Determine if it’s an ordered or unordered list
+        return list.startsWith('<li>1.') ? `<ol class="list-decimal pl-5">${list}</ol>` : `<ul class="list-disc pl-5">${list}</ul>`;
+      });
+
+
+      // Add the text before the GraphQL query
+      formattedResponse += `<p class="text-base text-zinc-950 dark:text-white">${formattedPart.replace(/\n/g, '<br>')}</p>`;
+
+      // If there is a corresponding GraphQL query, add it as well
+      if (index < graphqlQueries.length) {
+        formattedResponse += `<pre><code class="graphql">${graphqlQueries[index].code}</code></pre>`;
+      }
+    });
 
     return {
       formattedResponse: formattedResponse.trim(),
-      graphqlQuery,
+      graphqlQuery: graphqlQueries.filter((block) => block.language === 'graphql').map(block => block.code).pop() || '',
     };
   };
 
