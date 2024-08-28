@@ -9,13 +9,14 @@
   }
 }
 
-.graphiql-container {}
+.graphiql-container {
+}
 
 .graphiql-container .graphiql-main .graphiql-sessions {
   background-color: transparent !important;
 }
 
-.graphiql-container{
+.graphiql-container {
   background-color: transparent !important;
 }
 
@@ -27,7 +28,8 @@
   background-color: transparent !important;
 }
 
-.cm-s-graphiql, .CodeMirror-gutters{
+.cm-s-graphiql,
+.CodeMirror-gutters {
   background-color: transparent !important;
 }
 
@@ -35,7 +37,7 @@
   height: 100%;
 }
 
-.graphiql-openai-messages-container {;
+.graphiql-openai-messages-container {
 }
 
 #prompt {
@@ -63,7 +65,7 @@ code.graphql {
   position: relative;
 }
 
-.graphiql-plugin{
+.graphiql-plugin {
   top: 0;
   left: 0;
   position: absolute;

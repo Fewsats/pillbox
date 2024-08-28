@@ -23,7 +23,7 @@ type Settings struct {
 	OpenaiKey string `json:"openai_key"`
 
 	// HubKey is an PayWithHub API Key to use for payments.
-	HubKey  string `json:"hub_key"`
+	HubKey string `json:"hub_key"`
 
 	// UpdatedAt is the time the settings were updated.
 	UpdatedAt time.Time `json:"updated_at"`

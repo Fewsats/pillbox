@@ -177,12 +177,12 @@ export const GraphQL: React.FC = () => {
   );
 
   return (
-    <div className='mx-auto max-w-[1920px] p-4 h-full flex flex-col'>
+    <div className='mx-auto flex h-full max-w-[1920px] flex-col p-4'>
       <Heading level={1} className='mb-4 px-4'>
         GraphQL Explorer
       </Heading>
 
-      <div className='flex-1 overflow-hidden flex flex-col'>
+      <div className='flex flex-1 flex-col overflow-hidden'>
         <div className='graphiql-session-header flex w-full space-x-4 border-b border-gray-200 px-4 py-2'>
           <Field className={'flex-1'}>
             <Label>Query URL:</Label>
@@ -232,7 +232,7 @@ export const GraphQL: React.FC = () => {
           </span>
         )
         */}
-        <div className={'flex space-y-4 py-2 flex-1'}>
+        <div className={'flex flex-1 space-y-4 py-2'}>
           <div style={{ flex: 1, overflow: 'auto' }}>
             <GraphiQL
               fetcher={fetcher}

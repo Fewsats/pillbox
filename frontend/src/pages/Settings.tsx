@@ -46,7 +46,7 @@ export function Settings() {
     if (typeof window !== 'undefined') {
       init({
         appName: 'Fewsats Pillbox',
-        filters: ["nwc"],
+        filters: ['nwc'],
       });
     }
 
@@ -72,7 +72,8 @@ export function Settings() {
 
   useEffect(() => {
     if (
-      JSON.stringify(settings.wallet_config) !== JSON.stringify(walletConfig || null)
+      JSON.stringify(settings.wallet_config) !==
+      JSON.stringify(walletConfig || null)
     ) {
       handleSaveSettings();
     }
@@ -159,10 +160,10 @@ export function Settings() {
           <Field>
             <Label>PayWithHub API Key</Label>
             <Input
-                name='hubKey'
-                value={values.hubKey}
-                onChange={handleInputChange('hubKey')}
-                placeholder='Enter PayWithHub API Key'
+              name='hubKey'
+              value={values.hubKey}
+              onChange={handleInputChange('hubKey')}
+              placeholder='Enter PayWithHub API Key'
             />
           </Field>
         </FieldGroup>
