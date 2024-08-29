@@ -14,16 +14,7 @@ import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { credentials } from '../../wailsjs/go/models';
 import { AddCredential } from '../../wailsjs/go/main/App';
 import { decode } from 'light-bolt11-decoder';
-
-const TYPE_OPTIONS = [
-  { id: 'file', name: 'File' },
-  { id: 'graphql', name: 'GraphQL API' },
-];
-
-const METHOD_OPTIONS = [
-  { id: 'POST', name: 'POST' },
-  { id: 'GET', name: 'GET' },
-];
+import { METHOD_OPTIONS, TYPE_OPTIONS } from '../constants/options';
 
 type Option = {
   name: string;
