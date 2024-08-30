@@ -46,7 +46,8 @@ export function Settings() {
     if (typeof window !== 'undefined') {
       init({
         appName: 'Fewsats Pillbox',
-        filters: ['nwc'],
+        // @ts-ignore
+        filters: ['nostr'],
       });
     }
 
