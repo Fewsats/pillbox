@@ -1,5 +1,5 @@
-import { useState, useContext } from 'react';
-import { CredentialsContext } from '../App';
+import { useState, useContext, useMemo, Fragment } from 'react';
+import { CredentialsContext, SettingsContext } from '../App';
 import { Button } from '../components/catalyst/button';
 import {
   Dialog,
@@ -11,24 +11,53 @@ import { Field, FieldGroup, Label } from '../components/catalyst/fieldset';
 import { Input } from '../components/catalyst/input';
 import { Combobox } from '../components/catalyst/combobox';
 import { ClipboardIcon } from '@heroicons/react/24/outline';
+import { decode } from 'light-bolt11-decoder';
+import apiClient from '../services/apiClient';
+import {
+  METHOD_OPTIONS,
+  PAYMENT_OPTIONS,
+  TYPE_OPTIONS,
+} from '../constants/options';
+import { toast } from 'react-toastify';
+import { init, launchPaymentModal } from '@getalby/bitcoin-connect-react';
 import { credentials } from '../../wailsjs/go/models';
 import { AddCredential } from '../../wailsjs/go/main/App';
-import { decode } from 'light-bolt11-decoder';
-import { METHOD_OPTIONS, TYPE_OPTIONS } from '../constants/options';
+import { Divider } from './catalyst/divider';
 
 type Option = {
   name: string;
   id: string | number;
 };
 
-export function AddCredentialModal() {
+export function PayCredentialModal() {
   const { refreshCredentials } = useContext(CredentialsContext)!;
+  const { settings } = useContext(SettingsContext)!;
+  const [submitting, setSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [label, setLabel] = useState('');
   const [url, setUrl] = useState('');
   const [macaroon, setMacaroon] = useState('');
   const [invoice, setInvoice] = useState('');
   const [preimage, setPreimage] = useState('');
+
+  const availableMethods = useMemo(() => {
+    let methods = [];
+    if (settings?.hub_key) {
+      methods.push('hub');
+    }
+    if (settings?.wallet_config) {
+      methods.push('wallet');
+    }
+
+    return methods;
+  }, [settings]);
+  const PAYMENT_OPTIONS_FILTERED = useMemo(
+    () =>
+      PAYMENT_OPTIONS.filter((option) => availableMethods.includes(option.id)),
+    [availableMethods]
+  );
+
+  const [payment, setPayment] = useState<Option>(PAYMENT_OPTIONS_FILTERED[0]);
   const [type, setType] = useState<Option>(TYPE_OPTIONS[0]);
   const [method, setMethod] = useState<Option>(METHOD_OPTIONS[0]);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +68,6 @@ export function AddCredentialModal() {
   const setTrimmedPreimage = (value: string) => setPreimage(value.trim());
 
   const handleUrlSubmit = async () => {
-    setIsLoading(true);
     setError('');
 
     // if (url === "https://api.fewsats.com/v0/storage/download/f656f47e-292b-473d-b614-1b88ba83e0d4") {
@@ -48,6 +76,8 @@ export function AddCredentialModal() {
     //   setIsLoading(false)
     //   return
     // }
+
+    let data: { macaroon?: string; invoice?: string } = {};
 
     try {
       // Make API call to handle L402 errors and retrieve macaroon/invoice
@@ -60,6 +90,8 @@ export function AddCredentialModal() {
           );
           setMacaroon(macaroon);
           setInvoice(invoice);
+
+          data = { macaroon, invoice };
         } else {
           throw new Error('Missing WWW-Authenticate header');
         }
@@ -70,7 +102,60 @@ export function AddCredentialModal() {
       setError('Failed to retrieve macaroon and invoice');
     }
 
-    setIsLoading(false);
+    return data;
+  };
+
+  const handlePay = async () => {
+    setIsLoading(true);
+
+    const { macaroon, invoice } = await handleUrlSubmit();
+
+    if (payment.id === 'wallet') {
+      if (macaroon && invoice) {
+        launchPaymentModal({
+          invoice,
+          paymentMethods: 'internal',
+          onPaid: async ({ preimage }: { preimage: string }) => {
+            setPreimage(preimage);
+
+            setSubmitting(false);
+            toast.success('Successful payment!');
+            setIsLoading(false);
+          },
+          onCancelled: () => {
+            setSubmitting(false);
+            toast.error('Payment failed');
+            setIsLoading(false);
+          },
+        });
+      }
+    }
+
+    if (payment.id === 'hub') {
+      const data = {
+        l402_url: url,
+      };
+
+      const HUB_API_KEY = settings?.hub_key;
+
+      const response = await apiClient
+        .post(`/v0/l402/preview/purchase`, data, {
+          headers: {
+            Authorization: 'Token ' + HUB_API_KEY,
+            Accept: 'application/json',
+          },
+        })
+        .catch((e) => {
+          console.log('error', e);
+          toast.error('Payment failed');
+          setIsLoading(false);
+          setSubmitting(false);
+        });
+      console.log('response', response);
+      toast.success('Successful payment!');
+      setIsLoading(false);
+      setSubmitting(false);
+    }
   };
 
   function parseWWWAuthenticateHeader(header: string): [string, string] {
@@ -83,6 +168,16 @@ export function AddCredentialModal() {
 
     return [macaroonMatch[1], invoiceMatch[1]];
   }
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess('Copied!');
+      setTimeout(() => setCopySuccess(''), 2000);
+    } catch (err) {
+      setCopySuccess('Failed to copy');
+    }
+  };
 
   const handleSaveCredentials = async () => {
     // Trim the label only when saving
@@ -133,35 +228,15 @@ export function AddCredentialModal() {
     setIsOpen(false);
   };
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopySuccess('Copied!');
-      setTimeout(() => setCopySuccess(''), 2000);
-    } catch (err) {
-      setCopySuccess('Failed to copy');
-    }
-  };
-
   return (
     <>
       <Button type='button' onClick={() => setIsOpen(true)}>
-        Add Credentials
+        Pay for Credentials
       </Button>
       <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
-        <DialogTitle>Add Credentials</DialogTitle>
+        <DialogTitle>Pay for Credentials</DialogTitle>
         <DialogBody>
           <FieldGroup>
-            <Field>
-              <Label>Label</Label>
-              <Input
-                name='label'
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-                placeholder='Enter label'
-                autoFocus
-              />
-            </Field>
             <Field>
               <Label>URL</Label>
               <Input
@@ -172,22 +247,12 @@ export function AddCredentialModal() {
               />
             </Field>
             <Field>
-              <Label>Method</Label>
+              <Label>Pay with</Label>
               <Combobox
-                name='method'
-                value={method}
-                onChange={(option: Option) => setMethod(option)}
-                options={METHOD_OPTIONS}
-                search={false}
-              />
-            </Field>
-            <Field>
-              <Label>Type</Label>
-              <Combobox
-                name='type'
-                value={type}
-                onChange={(option: Option) => setType(option)}
-                options={TYPE_OPTIONS}
+                name='payment'
+                value={payment}
+                onChange={(option: Option) => setPayment(option)}
+                options={PAYMENT_OPTIONS_FILTERED}
                 search={false}
               />
             </Field>
@@ -216,22 +281,85 @@ export function AddCredentialModal() {
             </Field>
             <Field>
               <Label>Macaroon</Label>
-              <Input
-                name='macaroon'
-                value={macaroon}
-                onChange={(e) => setMacaroon(e.target.value)}
-                placeholder='Enter macaroon or use fetch to be populated automatically'
-              />
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Input
+                  name='macaroon'
+                  value={macaroon}
+                  onChange={(e) => setMacaroon(e.target.value)}
+                  placeholder='Macaroon will be populated automatically'
+                  disabled
+                />
+                <Button
+                  onClick={() => copyToClipboard(invoice)}
+                  disabled={!invoice}
+                  aria-label='Copy macaroon'
+                  style={{ padding: '8px', minWidth: 'auto' }}
+                >
+                  <ClipboardIcon className='h-5 w-5' />
+                </Button>
+              </div>
             </Field>
             <Field>
               <Label>Preimage</Label>
-              <Input
-                name='preimage'
-                value={preimage}
-                onChange={(e) => setTrimmedPreimage(e.target.value)}
-                placeholder='Enter preimage'
-              />
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Input
+                  name='preimage'
+                  value={preimage}
+                  onChange={(e) => setTrimmedPreimage(e.target.value)}
+                  placeholder='Preimage will be populated automatically'
+                  disabled
+                />
+                <Button
+                  onClick={() => copyToClipboard(invoice)}
+                  disabled={!invoice}
+                  aria-label='Copy preimage'
+                  style={{ padding: '8px', minWidth: 'auto' }}
+                >
+                  <ClipboardIcon className='h-5 w-5' />
+                </Button>
+              </div>
             </Field>
+
+            {preimage && (
+              <Fragment>
+                <Divider className='my-10' />
+
+                <DialogTitle>
+                  Fill in to Save the Credentials (optional)
+                </DialogTitle>
+
+                <Field>
+                  <Label>Label</Label>
+                  <Input
+                    name='label'
+                    value={label}
+                    onChange={(e) => setLabel(e.target.value)}
+                    placeholder='Enter label'
+                    autoFocus
+                  />
+                </Field>
+                <Field>
+                  <Label>Method</Label>
+                  <Combobox
+                    name='method'
+                    value={method}
+                    onChange={(option: Option) => setMethod(option)}
+                    options={METHOD_OPTIONS}
+                    search={false}
+                  />
+                </Field>
+                <Field>
+                  <Label>Type</Label>
+                  <Combobox
+                    name='type'
+                    value={type}
+                    onChange={(option: Option) => setType(option)}
+                    options={TYPE_OPTIONS}
+                    search={false}
+                  />
+                </Field>
+              </Fragment>
+            )}
           </FieldGroup>
           {error && <p style={{ color: 'red' }}>{error}</p>}
         </DialogBody>
@@ -239,15 +367,20 @@ export function AddCredentialModal() {
           <Button plain onClick={() => setIsOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleUrlSubmit} disabled={isLoading || !url}>
-            {isLoading ? 'Loading...' : 'Fetch Macaroon & Invoice'}
-          </Button>
           <Button
-            onClick={handleSaveCredentials}
-            disabled={!label || !macaroon || !preimage}
+            onClick={handlePay}
+            disabled={isLoading || !url || !!preimage}
           >
-            Save Credentials
+            {isLoading ? 'Loading...' : 'Pay'}
           </Button>
+          {preimage && (
+            <Button
+              onClick={handleSaveCredentials}
+              disabled={!label || !macaroon || !preimage}
+            >
+              Save Credentials
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </>

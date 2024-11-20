@@ -9,13 +9,27 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+type WalletConfig struct {
+	NwcUrl            *string `json:"nwcUrl"`
+	ConnectorName     string  `json:"connectorName"`
+	ConnectorType     string  `json:"connectorType"`
+	LnbitsInstanceUrl *string `json:"lnbitsInstanceUrl,omitempty"`
+	LnbitsAdminKey    *string `json:"lnbitsAdminKey,omitempty"`
+}
+
 // Settings represents user settings.
 type Settings struct {
 	// OpenaiKey is an OpenAI API Key to use with Assistant for GraphQL queries.
 	OpenaiKey string `json:"openai_key"`
 
+	// HubKey is an PayWithHub API Key to use for payments.
+	HubKey string `json:"hub_key"`
+
 	// UpdatedAt is the time the settings were updated.
 	UpdatedAt time.Time `json:"updated_at"`
+
+	// Bitcoin-connect wallet config for launching payment popup
+	WalletConfig *WalletConfig `json:"wallet_config"`
 }
 
 type Manager struct {

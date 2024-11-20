@@ -156,6 +156,9 @@ function AppContent() {
     try {
       const data = await GetSettings();
       setSettings(data);
+      if (data?.wallet_config) {
+        localStorage.setItem('bc:config', JSON.stringify(data.wallet_config));
+      }
     } catch (error) {
       console.error('Error fetching settings:', error);
     }
@@ -181,7 +184,7 @@ function AppContent() {
           value={{ settings, setSettings, refreshSettings }}
         >
           <SidebarLayout sidebar={<SidebarContent />} navbar={navbarContent}>
-            <div id='App'>
+            <div id='App' className={'h-full'}>
               <Routes>
                 <Route path='/' element={<Credentials />} />
                 <Route

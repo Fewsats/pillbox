@@ -134,7 +134,7 @@ export const Combobox = forwardRef(function Input(
                   <Headless.ComboboxButton className='group absolute inset-y-0 right-0 flex w-full items-center justify-end px-2.5'>
                     <ChevronDownIcon
                       className={clsx(
-                        'size-4 transform fill-zinc-950/60 transition-all group-data-[hover]:fill-zinc-950',
+                        'size-4 transform text-zinc-950/60 transition-all group-data-[hover]:fill-zinc-950 dark:text-white/60 dark:group-data-[hover]:fill-white',
                         open ? 'rotate-180' : 'rotate-0'
                       )}
                     />
@@ -145,7 +145,7 @@ export const Combobox = forwardRef(function Input(
                 <Headless.ComboboxButton className='group absolute inset-y-0 right-0 px-2.5'>
                   <ChevronDownIcon
                     className={clsx(
-                      'size-4 transform fill-zinc-950/60 transition-all group-data-[hover]:fill-zinc-950',
+                      'size-4 transform text-zinc-950/60 transition-all group-data-[hover]:fill-zinc-950 dark:text-white/60 dark:group-data-[hover]:fill-white',
                       open ? 'rotate-180' : 'rotate-0'
                     )}
                   />
